@@ -50,12 +50,12 @@ export default function RootLayout({
         }
       }}
     > 
-          <SignedOut>
+          {/* <SignedOut>
             <SignInButton />
           </SignedOut>
           <SignedIn>
             <UserButton />
-          </SignedIn>
+          </SignedIn> */}
           <ThemeProvider>
             {children}
           </ThemeProvider>

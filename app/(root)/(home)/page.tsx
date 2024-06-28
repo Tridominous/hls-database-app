@@ -12,20 +12,22 @@ import Link from "next/link";
 const equipments: EquipmentProps[] = [
   {
     _id: "1",
-    imgUrl: "/assets/images/light-illustration.png",
+    imgUrl: "/assets/images/HPLC1.JPG",
     title: "Microscope",
     brandname: "Alpha",
     model: "200 series",
     serialNumber: "15635889",
     assetTag: "8090",
+    team: "Technical",
     subunits: [
       {
-      _id: "1",
-      title: "Particle Detector",
-      brandname: "Alpha",
-      model: "200 series",
-      serialNumber: "7990",
-      assetTag: "0977",
+        _id: "1",
+        title: "Particle Detector",
+        brandname: "Alpha",
+        model: "200 series",
+        serialNumber: "7990",
+        assetTag: "0977",
+        serviceDate: new Date("2022-07-18T10:00:00.000Z"),
       },
       {
         _id: "1",
@@ -34,11 +36,11 @@ const equipments: EquipmentProps[] = [
         model: "200 series",
         serialNumber: "7990",
         assetTag: "0977",
-        },
-
+      },
     ],
     labNumber: "Hawthon HB 0.13",
     labName: "Chemistry lab",
+    serviceDate: new Date("2022-07-18T10:00:00.000Z"),
     tag: "HPLC",
     author: {
       _id: "1",
@@ -51,7 +53,7 @@ const equipments: EquipmentProps[] = [
   },
   {
     _id: "2",
-    imgUrl: "/assets/images/light-illustration.png",
+    imgUrl: "/assets/images/bruker.JPG",
     title: "Centrifuge",
     brandname: "Beta",
     model: "5000X",
@@ -59,6 +61,8 @@ const equipments: EquipmentProps[] = [
     assetTag: "8091",
     labNumber: "Hawthon HB 0.14",
     labName: "Biology lab",
+    team: "Technical",
+    serviceDate: new Date("2022-07-18T10:00:00.000Z"),
     comment: "Converter is not functional please do not use, Dangererous!",
     tag: "Biotech",
     author: {
@@ -72,12 +76,13 @@ const equipments: EquipmentProps[] = [
   },
   {
     _id: "3",
-    imgUrl: "/assets/images/light-illustration.png",
+    imgUrl: "/assets/images/bruker.JPG",
     title: "Spectrometer",
     serialNumber: "84756293",
     assetTag: "8092",
     labNumber: "Hawthon HB 0.15",
     labName: "Physics lab",
+    team: "Technical",
     tag: "Spectroscopy",
     author: {
       _id: "3",
@@ -90,7 +95,7 @@ const equipments: EquipmentProps[] = [
   },
   {
     _id: "4",
-    imgUrl: "/assets/images/dark-illustration.png",
+    imgUrl: "/assets/images/HPLC1.JPG",
     title: "Pipette",
     brandname: "Delta",
     model: "P-20",
@@ -98,6 +103,7 @@ const equipments: EquipmentProps[] = [
     assetTag: "8093",
     labNumber: "Hawthon HB 0.16",
     labName: "Microbiology lab",
+    team: "Technical",
     tag: "Microbiology",
     author: {
       _id: "4",
@@ -110,7 +116,7 @@ const equipments: EquipmentProps[] = [
   },
   {
     _id: "5",
-    imgUrl: "/assets/images/light-illustration.png",
+    imgUrl: "/assets/images/bruker.JPG",
     title: "Incubator",
     brandname: "Epsilon",
     model: "Model 101",
@@ -118,6 +124,7 @@ const equipments: EquipmentProps[] = [
     assetTag: "8094",
     labNumber: "Hawthon HB 0.17",
     labName: "Genetics lab",
+    team: "Teaching",
     tag: "Genetics",
     author: {
       _id: "5",
@@ -130,7 +137,7 @@ const equipments: EquipmentProps[] = [
   },
   {
     _id: "6",
-    imgUrl: "/assets/images/light-illustration.png",
+    imgUrl: "/assets/images/bruker.JPG",
     title: "Autoclave",
     brandname: "Zeta",
     model: "Sterilizer 300",
@@ -138,6 +145,7 @@ const equipments: EquipmentProps[] = [
     assetTag: "8095",
     labNumber: "Hawthon HB 0.18",
     labName: "Sterilization lab",
+    team: "research",
     tag: "Sterilization",
     author: {
       _id: "6",
@@ -150,7 +158,7 @@ const equipments: EquipmentProps[] = [
   },
   {
     _id: "7",
-    imgUrl: "/assets/images/light-illustration.png",
+    imgUrl: "/assets/images/bruker.JPG",
     title: "Analytical Balance",
     brandname: "Eta",
     model: "A-200",
@@ -158,6 +166,7 @@ const equipments: EquipmentProps[] = [
     assetTag: "8096",
     labNumber: "Hawthon HB 0.19",
     labName: "Analytical lab",
+    team: "Technical",
     tag: "Weighing",
     author: {
       _id: "7",
@@ -178,6 +187,7 @@ const equipments: EquipmentProps[] = [
     assetTag: "8097",
     labNumber: "Hawthon HB 0.20",
     labName: "Chemistry lab",
+    team: "Technical",
     tag: "Safety",
     author: {
       _id: "8",
@@ -190,7 +200,7 @@ const equipments: EquipmentProps[] = [
   },
   {
     _id: "9",
-    imgUrl: "/assets/images/light-illustration.png",
+    imgUrl: "/assets/images/bruker.JPG",
     title: "pH Meter",
     brandname: "Iota",
     model: "PH-10",
@@ -198,6 +208,7 @@ const equipments: EquipmentProps[] = [
     assetTag: "8098",
     labNumber: "Hawthon HB 0.21",
     labName: "Biochemistry lab",
+    team: "Technical",
     tag: "Biochemistry",
     author: {
       _id: "9",
@@ -218,6 +229,7 @@ const equipments: EquipmentProps[] = [
     assetTag: "8099",
     labNumber: "Hawthon HB 0.22",
     labName: "Cold Storage lab",
+    team: "Technical",
     tag: "Storage",
     author: {
       _id: "10",
@@ -276,6 +288,8 @@ export default function Home() {
             subunits={equipment.subunits}
             labNumber={equipment.labNumber}
             labName={equipment.labName}
+            team={equipment.team}
+            serviceDate={equipment.serviceDate}
             comment={equipment.comment}
             tag={equipment.tag}
             author={equipment.author}

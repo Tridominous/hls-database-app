@@ -1,10 +1,10 @@
 "use client"
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { EquipmentSchema } from '@/lib/validations'
-
+import axios from 'axios'
 
 import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, Loader, Loader2, TrashIcon, XCircle } from "lucide-react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { z } from "zod"
@@ -25,7 +25,10 @@ import { Popover, PopoverTrigger, PopoverContent, } from '@radix-ui/react-popove
 import { Calendar } from '../ui/calendar'
 import { cn } from '@/lib/utils'
 import { Textarea } from '../ui/textarea'
+import { useToast } from "@/components/ui/use-toast"
 
+import { UploadButton, UploadDropzone } from '@/utils/uploadthing'
+import Image from 'next/image'
 
 
 
@@ -51,20 +54,60 @@ const Equipment = () => {
   })
 
 
+
+
+  //Array of subunits
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "subunits",
   });
  
-  // 2. Define a submit handler.
+
+
+
+const [imagedata, setImagedata] = useState<string | undefined>("")
+const [imageIsdeleting, setImageIsdeleting] = useState(false)
+const {toast} = useToast()
+
+
+// Attaches imgUrl to form
+useEffect(() => {
+  if(typeof imagedata === 'string') {
+    form.setValue('imgUrl', imagedata, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
+    })
+  }
+}, [form, imagedata])
+
+
+const handleImageDelete = (image: string) => {
+  setImageIsdeleting(true)
+  const imageKey = image.substring(image.lastIndexOf('/') + 1)
+  axios.post('api/uploadthing/delete', {imageKey}).then(() => {
+    setImagedata('');
+    toast({
+      variant: 'success',
+      description: "🗑️ Image Removed Successfully"
+    })
+  }).catch(() => {
+    toast({
+      variant: 'destructive',
+      description: "image not removed, something went wrong 😢"
+  })
+}).finally(() => setImageIsdeleting(false))
+
+}
+      
+
+
+  // . Define a submit handler.
   function onSubmit(values: z.infer<typeof EquipmentSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values)
   }
-
-
-      
 
   return (
     <Form {...form}>
@@ -453,6 +496,60 @@ const Equipment = () => {
               </FormControl>
               <FormDescription className='body-regular mt-2.5 text-light-500'>
                General comments, e.g damages, ownership, new ...
+              </FormDescription>
+              <FormMessage  className='text-red-500'/>
+            </FormItem>
+          )}
+        />
+
+<FormField
+          control={form.control}
+          name="imgUrl"
+          render={({ field }) => (
+            <FormItem className='flex w-full flex-col'>
+              <FormLabel className='paragraph-semibold text-dark400_light800'>Upload an image <span className='text-primary-500'>*</span></FormLabel>
+              <FormControl className='mt-3.5'>
+                {imagedata ? <>
+                <div className='flex flex-col items-center justify-center max-w-[400px] min-w-[100px] max-h-[400px]  min-h-[100px] bg-light900'>
+                  <Image 
+                    src={imagedata} 
+                    alt="equipment image" 
+                    className='object-contain'
+                    width={300}
+                    height={300}
+                  />
+                  <Button onClick={() => handleImageDelete(imagedata)} size='icon' variant="ghost" className='text-dark400_light800 right-[-12px] top-0'>
+                    {imageIsdeleting ? <Loader2/> : <XCircle/>}
+                  </Button>
+                </div>
+                </> : <>
+                <div className='flex flex-col items-center max-w[400px] p-12 border-2 border-dashed border-primary/50 rounded mt-4'>
+                  <UploadButton
+                    endpoint="imageUploader"
+                    onClientUploadComplete={(res: any) => {
+                      // Do something with the response
+                      console.log("Files: ", res);
+                      setImagedata(res[0].url) // I found it faster than setImagedata(res?.[0].url)
+                      toast({
+                        variant: "success",
+                        title: "🎉 Image uploaded Successfully!"
+                      })
+                    }}
+                    onUploadError={(error: Error) => {
+                      // Do something with the error.
+                      toast({
+                        variant: "destructive",
+                        title: "Error! Upload failed.",
+                        description: "Image size is probably too large"
+                      })
+                    }}
+                  />
+                  </div>
+                </>}
+                
+              </FormControl>
+              <FormDescription className='body-regular mt-2.5 text-light-500'>
+               Choose an image for the equipment you&apos;re adding.
               </FormDescription>
               <FormMessage  className='text-red-500'/>
             </FormItem>

@@ -1,6 +1,7 @@
+import { withUt } from "uploadthing/tw";
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default withUt ({
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -60,12 +61,12 @@ module.exports = {
       },
       keyframes: {
         "accordion-down": {
-          from: { height: 0 },
+          from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: 0 },
+          to: { height: "0" },
         },
       },
       animation: {
@@ -75,4 +76,9 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
-};
+});
+
+
+
+
+ 

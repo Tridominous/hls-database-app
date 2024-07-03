@@ -29,8 +29,9 @@ import { useToast } from "@/components/ui/use-toast"
 
 import { UploadButton, UploadDropzone } from '@/utils/uploadthing'
 import Image from 'next/image'
+import { createEquipment } from '@/lib/actions/equitment.action'
 
-
+const type: any = 'create'
 
 const Equipment = () => {
     // 1. Define your form.
@@ -68,7 +69,7 @@ const Equipment = () => {
 const [imagedata, setImagedata] = useState<string | undefined>("")
 const [imageIsdeleting, setImageIsdeleting] = useState(false)
 const {toast} = useToast()
-
+const [isSubmitting, setIsSubmitting] = useState(false)
 
 // Attaches imgUrl to form
 useEffect(() => {
@@ -100,12 +101,23 @@ const handleImageDelete = (image: string) => {
 
 }
       
-
+  
 
   // . Define a submit handler.
-  function onSubmit(values: z.infer<typeof EquipmentSchema>) {
+  async function onSubmit(values: z.infer<typeof EquipmentSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+    setIsSubmitting(true)
+
+    try {
+      // make async call to API to create an equipment containing all form data
+      await createEquipment({})
+
+    } catch (error){
+
+    } finally {
+      setIsSubmitting(false)
+    }
     console.log(values)
   }
 
@@ -559,7 +571,21 @@ const handleImageDelete = (image: string) => {
 
 
 
-        <Button className="primary-gradient min-h-[46px] px-4 py-3 !text-light-900" type="submit">Submit</Button>
+        <Button className="primary-gradient w-fit min-h-[46px] px-4 py-3 !text-light-900" type="submit">
+          {
+            isSubmitting ? (
+              <>
+              {type === 'Edit' ? 'Editing...' : 'Posting...' }
+              </>
+            ) : (
+              <>
+              {type === 'Edit' ? 'Edit Equipment' : 'Add an Equipment'}
+              </>
+              
+            )
+          }
+          Submit
+          </Button>
       </form>
     </Form>
   )

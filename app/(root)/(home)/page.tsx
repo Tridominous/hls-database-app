@@ -47,7 +47,7 @@ const equipments: EquipmentProps[] = [
       name: "Barry Amos",
       picture: "amos.png",
     },
-    uses: 20,
+  
     views: 100,
     createdAt: new Date("2022-09-03T12:00:00.000Z"),
   },
@@ -70,7 +70,7 @@ const equipments: EquipmentProps[] = [
       name: "Alice Johnson",
       picture: "alice.png",
     },
-    uses: 35,
+   
     views: 150,
     createdAt: new Date("2022-10-12T09:30:00.000Z"),
   },
@@ -89,7 +89,6 @@ const equipments: EquipmentProps[] = [
       name: "John Smith",
       picture: "john.png",
     },
-    uses: 50,
     views: 200,
     createdAt: new Date("2022-08-25T11:15:00.000Z"),
   },
@@ -110,7 +109,7 @@ const equipments: EquipmentProps[] = [
       name: "Emma Brown",
       picture: "emma.png",
     },
-    uses: 10,
+
     views: 50,
     createdAt: new Date("2022-11-02T13:45:00.000Z"),
   },
@@ -131,7 +130,7 @@ const equipments: EquipmentProps[] = [
       name: "Chris White",
       picture: "chris.png",
     },
-    uses: 25,
+
     views: 80,
     createdAt: new Date("2022-07-18T10:00:00.000Z"),
   },
@@ -152,7 +151,7 @@ const equipments: EquipmentProps[] = [
       name: "David Clark",
       picture: "david.png",
     },
-    uses: 60,
+  
     views: 210,
     createdAt: new Date("2022-09-10T12:30:00.000Z"),
   },
@@ -173,7 +172,7 @@ const equipments: EquipmentProps[] = [
       name: "Sophia Green",
       picture: "sophia.png",
     },
-    uses: 40,
+  
     views: 170,
     createdAt: new Date("2022-10-05T08:45:00.000Z"),
   },
@@ -194,7 +193,7 @@ const equipments: EquipmentProps[] = [
       name: "James Hall",
       picture: "james.png",
     },
-    uses: 15,
+  
     views: 90,
     createdAt: new Date("2022-08-15T11:00:00.000Z"),
   },
@@ -215,7 +214,7 @@ const equipments: EquipmentProps[] = [
       name: "Olivia Lee",
       picture: "olivia.png",
     },
-    uses: 30,
+    
     views: 130,
     createdAt: new Date("2022-11-12T09:15:00.000Z"),
   },
@@ -236,7 +235,7 @@ const equipments: EquipmentProps[] = [
       name: "Lucas Martin",
       picture: "lucas.png",
     },
-    uses: 45,
+    
     views: 160,
     createdAt: new Date("2022-07-20T10:30:00.000Z"),
   },
@@ -293,7 +292,7 @@ export default function Home() {
             comment={equipment.comment}
             tag={equipment.tag}
             author={equipment.author}
-            uses={equipment.uses}
+            
             views={equipment.views}
             createdAt={equipment.createdAt}
          />

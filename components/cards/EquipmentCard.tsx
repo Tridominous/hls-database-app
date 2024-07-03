@@ -34,7 +34,6 @@ export interface EquipmentProps { //different properties like purchasedate, pric
         name: string;
         picture: string;
     };
-    uses: number;
     views: number;
 
     createdAt: Date;
@@ -57,7 +56,6 @@ const EquipmentCard = ({
     comment,
     tag,
     author,
-    uses,
     views,
     createdAt,
 }: EquipmentProps) => {
@@ -125,13 +123,6 @@ const EquipmentCard = ({
                     isAuthor
                 />
 
-                <Metric
-                    imgUrl="/assets/icons/like.svg"
-                    alt="Uses"
-                    value={formatNumber(uses)}
-                    title= " Uses"
-                    textStyles="small-medium text-dark400_light800"
-                />
 
                
 

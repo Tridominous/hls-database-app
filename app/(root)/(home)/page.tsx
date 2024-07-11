@@ -73,7 +73,7 @@ export default  async function Home() {
          />
         )): 
         <NoResult
-          title="There&apos;s no equipment to show to show"
+          title="There&apos;re no equipment to show to show"
           description="Be the first to add this equipment!"
           link="/add-equipment"
           linkTitle="Add an Equipment"

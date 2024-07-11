@@ -444,13 +444,11 @@ const handleImageDelete = (image: string) => {
               <FormControl className='mt-3.5'>
               <Input 
                     className='no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border'
+                    placeholder='Hawthorn 3.09'
                     {...field} 
                 />
               </FormControl>
-              <FormDescription className='body-regular mt-2.5 text-light-500'>
-              LabNumber
-              </FormDescription>
-              <FormMessage  className='text-red-500'/>
+            
             </FormItem>
           )}
         />
@@ -460,17 +458,15 @@ const handleImageDelete = (image: string) => {
           name="labName"
           render={({ field }) => (
             <FormItem className='flex w-full flex-col gap-3'>
-              <FormLabel className='paragraph-semibold text-dark400_light800'>Room/Lab Name <span className='text-primary-500'>*</span></FormLabel>
+              <FormLabel className='paragraph-semibold text-dark400_light800'>Room/Lab Name </FormLabel>
               <FormControl className='mt-3.5'>
               <Input 
                     className='no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border'
+                    placeholder='Project Laboratory'
                     {...field} 
                 />
               </FormControl>
-              <FormDescription className='body-regular mt-2.5 text-light-500'>
-              LabName
-              </FormDescription>
-              <FormMessage  className='text-red-500'/>
+              
             </FormItem>
           )}
         />
@@ -483,6 +479,7 @@ const handleImageDelete = (image: string) => {
               <FormControl className='mt-3.5'>
               <Input 
                     className='no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border'
+                    placeholder='Teaching'
                     {...field} 
                 />
               </FormControl>
@@ -508,11 +505,11 @@ const handleImageDelete = (image: string) => {
                 <Input 
                     className='no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border'
                     {...field} 
-                    placeholder='Add General Equipment type/ category...'
+                    placeholder='Spectrophotometer'
                 />
               </FormControl>
               <FormDescription className='body-regular mt-2.5 text-light-500'>
-                Equipment type to determine their total
+                Equipment a general type to determine their grouping
               </FormDescription>
               <FormMessage  className='text-red-500'/>
             </FormItem>
@@ -530,7 +527,7 @@ const handleImageDelete = (image: string) => {
                 <Textarea 
                     className='no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border'
                     {...field} 
-                    placeholder='Add General Equipment type...'
+                    placeholder='Analyser not working, do not use until repaired'
                 />
               </FormControl>
               <FormDescription className='body-regular mt-2.5 text-light-500'>
@@ -595,7 +592,7 @@ const handleImageDelete = (image: string) => {
               <FormMessage  className='text-red-500'/>
             </FormItem>
           )}
-        /> */}
+        />  */}
 
 <FormField
   control={form.control}

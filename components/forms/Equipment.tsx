@@ -1,13 +1,15 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { EquipmentSchema } from '@/lib/validations'
 import axios from 'axios'
 
+
 import { format } from "date-fns"
-import { CalendarIcon, Loader, Loader2, TrashIcon, XCircle } from "lucide-react"
+import { CalendarIcon, Loader2, XCircle } from "lucide-react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { z } from "zod"
+import { useRouter, usePathname } from 'next/navigation'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -27,20 +29,26 @@ import { cn } from '@/lib/utils'
 import { Textarea } from '../ui/textarea'
 import { useToast } from "@/components/ui/use-toast"
 
+// import { useUploadThing } from '@/utils/uploadthing';
+
 import { UploadButton, UploadDropzone } from '@/utils/uploadthing'
 import Image from 'next/image'
-import { createEquipment } from '@/lib/actions/equitment.action'
+import { createEquipment } from '@/lib/actions/equipment.action'
 
 const type: any = 'create'
 
-const Equipment = () => {
+interface Props {
+  mongoUserId: string;
+}
+
+const Equipment = ({mongoUserId}: Props) => {
     // 1. Define your form.
   const form = useForm<z.infer<typeof EquipmentSchema>>({
     resolver: zodResolver(EquipmentSchema),
     defaultValues: {
         title: "",
         brandname: "",
-        model: "",
+        modelname: "",
         serialNumber: "",
         assetTag: "",
         subunits: [],
@@ -53,8 +61,6 @@ const Equipment = () => {
         imgUrl: "",
     },
   })
-
-
 
 
   //Array of subunits
@@ -70,17 +76,19 @@ const [imagedata, setImagedata] = useState<string | undefined>("")
 const [imageIsdeleting, setImageIsdeleting] = useState(false)
 const {toast} = useToast()
 const [isSubmitting, setIsSubmitting] = useState(false)
+const router = useRouter();
+const pathname = usePathname();
 
-// Attaches imgUrl to form
-useEffect(() => {
-  if(typeof imagedata === 'string') {
-    form.setValue('imgUrl', imagedata, {
-      shouldValidate: true,
-      shouldDirty: true,
-      shouldTouch: true
-    })
-  }
-}, [form, imagedata])
+
+
+const handleImageUpload = useCallback((uploadedUrl: string) => {
+  setImagedata(uploadedUrl);
+  form.setValue('imgUrl', uploadedUrl, {
+    shouldValidate: true,
+    shouldDirty: true,
+    shouldTouch: true
+  });
+}, [form]);
 
 
 const handleImageDelete = (image: string) => {
@@ -100,25 +108,57 @@ const handleImageDelete = (image: string) => {
 }).finally(() => setImageIsdeleting(false))
 
 }
-      
-  
+     
 
-  // . Define a submit handler.
+
+  // . Define a submit handler.z
   async function onSubmit(values: z.infer<typeof EquipmentSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    setIsSubmitting(true)
-
+    console.log("Form submitted", values);
+    setIsSubmitting(true);
+  
     try {
-      // make async call to API to create an equipment containing all form data
-      await createEquipment({})
-
-    } catch (error){
-
+      const response = await createEquipment({
+        title: values.title,
+        brandname: values.brandname || "",
+        modelname: values.modelname || "",
+        serialNumber: values.serialNumber || "",
+        assetTag: values.assetTag || "",
+        subunits: values.subunits || [],
+        labNumber: values.labNumber || "",
+        labName: values.labName || "",
+        team: values.team || "",
+        tag: values.tag || "",
+        serviceDate: values.serviceDate || new Date(),
+        comment: values.comment || "",
+        imgUrl: values.imgUrl || "",
+        author: JSON.parse(mongoUserId),
+        path: pathname
+      });
+  
+      console.log("Equipment created:", response);
+  
+      toast({
+        variant: 'success',
+        title: 'Equipment added successfully',
+        description: 'Your equipment has been added to the database.'
+      });
+  
+      // Reset form
+      form.reset();
+      setImagedata(undefined);
+  
+      // Redirect to home page
+      router.push('/');
+    } catch (error) {
+      console.error("Failed to create equipment:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Error creating equipment',
+        description: 'Something went wrong while creating the equipment. Please try again.'
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-    console.log(values)
   }
 
   return (
@@ -166,7 +206,7 @@ const handleImageDelete = (image: string) => {
 
         <FormField
           control={form.control}
-          name="model"
+          name="modelname"
           render={({ field }) => (
             <FormItem className='flex w-full flex-col gap-3'>
               <FormLabel className='paragraph-semibold text-dark400_light800'>Model</FormLabel>
@@ -258,19 +298,6 @@ const handleImageDelete = (image: string) => {
           )}
         />
 
-{/* <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Subunit</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
 
         {fields.map((item, index) => (
           <div key={item.id} className="flex gap-4 flex-wrap">
@@ -308,7 +335,7 @@ const handleImageDelete = (image: string) => {
             />
             <FormField
               control={form.control}
-              name={`subunits.${index}.model`}
+              name={`subunits.${index}.modelname`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className='paragraph-semibold text-dark400_light800'>Model</FormLabel>
@@ -403,7 +430,7 @@ const handleImageDelete = (image: string) => {
         <Button 
           className="primary-gradient  w-1/3 px-4 py-3 !text-light-900" 
           type="button" 
-          onClick={() => append({ title: "", brandname: "", model: "", serialNumber: "", assetTag: "", serviceDate: new Date() })}>
+          onClick={() => append({ title: "", brandname: "", modelname: "", serialNumber: "", assetTag: "", serviceDate: new Date() })}>
           Add Subunit
         </Button>
         
@@ -514,7 +541,7 @@ const handleImageDelete = (image: string) => {
           )}
         />
 
-<FormField
+{/* <FormField
           control={form.control}
           name="imgUrl"
           render={({ field }) => (
@@ -526,9 +553,9 @@ const handleImageDelete = (image: string) => {
                   <Image 
                     src={imagedata} 
                     alt="equipment image" 
-                    className='object-contain'
-                    width={300}
-                    height={300}
+                    className='object-contain py-6'
+                    width={200}
+                    height={200}
                   />
                   <Button onClick={() => handleImageDelete(imagedata)} size='icon' variant="ghost" className='text-dark400_light800 right-[-12px] top-0'>
                     {imageIsdeleting ? <Loader2/> : <XCircle/>}
@@ -541,7 +568,9 @@ const handleImageDelete = (image: string) => {
                     onClientUploadComplete={(res: any) => {
                       // Do something with the response
                       console.log("Files: ", res);
-                      setImagedata(res[0].url) // I found it faster than setImagedata(res?.[0].url)
+                      const uploadedUrl = res[0].url
+                      handleImageUpload(uploadedUrl)
+                      // setImagedata(res[0].url) // I found it faster than setImagedata(res?.[0].url)
                       toast({
                         variant: "success",
                         title: "🎉 Image uploaded Successfully!"
@@ -566,29 +595,73 @@ const handleImageDelete = (image: string) => {
               <FormMessage  className='text-red-500'/>
             </FormItem>
           )}
-        />
+        /> */}
+
+<FormField
+  control={form.control}
+  name="imgUrl"
+  render={({ field }) => (
+    <FormItem className='flex w-full flex-col'>
+      <FormLabel className='paragraph-semibold text-dark400_light800'>
+        Upload an image <span className='text-primary-500'>*</span>
+      </FormLabel>
+      <FormControl className='mt-3.5'>
+        {imagedata ? (
+          <div className='flex flex-col items-center justify-center max-w-[400px] min-w-[100px] max-h-[400px]  min-h-[100px] bg-light900'>
+            <Image 
+              src={imagedata} 
+              alt="equipment image" 
+              className='object-contain py-6'
+              width={200}
+              height={200}
+            />
+            <Button onClick={() => handleImageDelete(imagedata)} size='icon' variant="ghost" className='text-dark400_light800 right-[-12px] top-0'>
+              {imageIsdeleting ? <Loader2/> : <XCircle/>}
+            </Button>
+          </div>
+        ) : (
+          <div className='flex flex-col items-center max-w[400px] p-12 border-2 border-dashed border-primary/50 rounded mt-4'>
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={(res: any) => {
+                console.log("Files: ", res);
+                const uploadedUrl = res[0].url;
+                handleImageUpload(uploadedUrl);
+                field.onChange(uploadedUrl); // Update form value
+                toast({
+                  variant: "success",
+                  title: "🎉 Image uploaded Successfully!"
+                });
+              }}
+              onUploadError={(error: Error) => {
+                toast({
+                  variant: "destructive",
+                  title: "Error! Upload failed.",
+                  description: "Image size is probably too large"
+                });
+              }}
+            />
+          </div>
+        )}
+      </FormControl>
+      <FormDescription className='body-regular mt-2.5 text-light-500'>
+        Choose an image for the equipment you&apos;re adding.
+      </FormDescription>
+      <FormMessage className='text-red-500'/>
+    </FormItem>
+  )}
+/>
 
 
 
-
-        <Button className="primary-gradient w-fit min-h-[46px] px-4 py-3 !text-light-900" type="submit">
-          {
-            isSubmitting ? (
-              <>
-              {type === 'Edit' ? 'Editing...' : 'Posting...' }
-              </>
-            ) : (
-              <>
-              {type === 'Edit' ? 'Edit Equipment' : 'Add an Equipment'}
-              </>
-              
-            )
-          }
-          Submit
-          </Button>
+<Button disabled={isSubmitting} className="primary-gradient w-fit min-h-[46px] px-4 py-3 !text-light-900" type="submit">
+  {isSubmitting ? 'Submitting...' : (type === 'Edit' ? 'Edit Equipment' : 'Add an Equipment')}
+</Button>
       </form>
     </Form>
   )
 }
 
 export default Equipment;
+
+

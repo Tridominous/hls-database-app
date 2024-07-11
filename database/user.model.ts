@@ -29,11 +29,13 @@ const UserSchema: Schema = new Schema({
     picture: { type: String},
     role: { type: String, default: 'user' },
     createdAt: { type: Date, default: Date.now },
-    saved: [{ type: Schema.Types.ObjectId, ref: 'Equipment' }],
+    saved: [{ type: Schema.Types.ObjectId, ref: 'EquipmentCard', max: 1000 }],
     joinedAt: { type: Date, default: Date.now }
 });
 
 // Create the EquipmentCard model
-const User = model<IUser>('User', UserSchema);
+const User = models.User || model('User', UserSchema);
+
 
 export default User;
+  

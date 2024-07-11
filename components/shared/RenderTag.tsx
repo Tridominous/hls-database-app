@@ -8,7 +8,8 @@ interface Props {
     showCount?: boolean;
 }
 
-const RenderTag = ({ name, totalEquipment, showCount}: Props) => {
+
+const RenderTag: React.FC<Props> = ({ name, totalEquipment, showCount}: Props) => {
 
   return (
     <Link href={`/tags/`} className='flex justify-between gap-2'>

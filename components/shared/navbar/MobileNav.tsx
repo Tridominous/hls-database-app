@@ -26,7 +26,7 @@ const NavContent = () => {
                     className={`${isActive ? 'primary-gradient rounded-lg text-light-900' : 'text-dark300_light900'} flex items-center justify-start gap-4 bg-transparent p-4`}
                     >
                         <Image
-                            src={item.imgURL}
+                            src={typeof item.imgURL === 'string' ? item.imgURL : URL.createObjectURL(item.imgURL)}
                             alt={item.label}
                             width={20}
                             height={20}

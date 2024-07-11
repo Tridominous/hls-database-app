@@ -31,7 +31,7 @@ const RightSidebar = () => {
             <div className='mt-7 flex w-full flex-col gap-[30px]'>
                 {hotEquipment.map((equipment) => (
                     <Link
-                        href={`/questions/${equipment._id}`}
+                        href={`/equipment/${equipment._id}`}
                         key={equipment._id}
                         className='flex cursor-pointer items-center justify-between gap-7'
                     >
@@ -56,7 +56,6 @@ const RightSidebar = () => {
                 {popularTags.map((tag) => (
                     <RenderTag
                         key={tag._id}
-                        _id={tag._id}
                         name={tag.name}
                         totalEquipment={tag.totalEquipment}
                         showCount

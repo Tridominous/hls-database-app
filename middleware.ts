@@ -17,7 +17,6 @@ import {
 
 const isProtectedRoute = createRouteMatcher([
   '/add-equipment(.*)',
-  '/api/webhook(.*)',
   '/tags(.*)',
   '/community(.*)',
 ]);

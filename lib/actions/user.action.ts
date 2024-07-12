@@ -2,11 +2,11 @@
 
 import User from "@/database/user.model";
 import { connectToDatabase } from "../mongoose"
-import { CreateUserParams, DeleteUserParams, UpdateUserParams } from "./shared.types";
+import { CreateUserParams, DeleteUserParams, GetUserByIdParams, UpdateUserParams } from "./shared.types";
 import { revalidatePath } from "next/cache";
 import EquipmentCard from "@/database/equipment.model";
 
-export const getUserById = async (params: any) => {
+export const getUserById = async (params: GetUserByIdParams) => {
     try {
       await  connectToDatabase();
       const {userId} = params;
@@ -52,7 +52,7 @@ export const deleteUser = async (params: DeleteUserParams) => {
   try {
     await  connectToDatabase();
     const { clerkId } = params;
-    const user = await User.findOneAndDelete({clerkId})
+    const user = await User.findOne({clerkId})
 
     if(!user){
       throw new Error('User not found')
@@ -66,7 +66,7 @@ export const deleteUser = async (params: DeleteUserParams) => {
     return deletedUser;
 
   } catch (error) {
-      console.log(error)
+      console.log("Error in deleteUser", error)
       throw error;
   }
 }

@@ -72,7 +72,7 @@ const EquipmentCard = ({
             </span>
             <Link href={`/equipment/${_id}`}>
                 <Image
-                    src={imgUrl}
+                    src={imgUrl || '/public/assets/images/default_equipment.png'}
                     alt={`${title} photo missing`}
                     width={150}
                     height={150}

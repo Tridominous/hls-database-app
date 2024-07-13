@@ -34,7 +34,7 @@ export default  async function Home() {
           route="/"
           iconPosition="left"
           imgSrc="/assets/icons/search.svg"
-          placeholder="Search for Questions"
+          placeholder="Search for Equipment"
           otherClasses="flex-1"
         />
 

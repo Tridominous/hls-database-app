@@ -2,6 +2,7 @@ import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { UpdateUser, createUser, deleteUser } from '@/lib/actions/user.action'
+import { Error as MongooseError } from 'mongoose'
 
 export async function POST(req: Request) {
 
@@ -59,35 +60,58 @@ export async function POST(req: Request) {
   if(eventType === 'user.created') {
     const {id, email_addresses, image_url, username, first_name, last_name} = evt.data
     
-    //   create new user to database
-    const mongoUser = await createUser({
-      clerkId: id,
-      name: `${first_name}${last_name ? ` ${last_name}` : ""}`,
-      email: email_addresses[0].email_address,
-      picture: image_url,
-      username: username!,  //tells typescript to accept/ignore
+    try {
+      //   create new user to database
+      const mongoUser = await createUser({
+        clerkId: id,
+        name: `${first_name}${last_name ? ` ${last_name}` : ""}`,
+        email: email_addresses[0].email_address,
+        picture: image_url,
+        username: username|| `user_${Date.now().toString(36)}`,  //generate a username if not provided
+      })
+      console.log('User created in MongoDB:', mongoUser);
+      return new Response('User created successfully', { status: 200 });
+
+    } catch (error) {
+      console.error('Error creating user:', error);
+      if (error instanceof MongooseError.ValidationError) {
+      const validationErrors = Object.entries(error.errors).map(([key, value]) => ({
+        field: key,
+        message: value.message
+      }));
+      console.log(validationErrors)
+      }
+      return new Response('Error occured', {
+        status: 500
+        })
+      
+    }
   
-  
-    })
-    console.log(mongoUser)
-    return  Response.json({message: 'OK', user: mongoUser})
-  
-  }
+  } 
 
   if(eventType === 'user.updated') {
     const {id, email_addresses, image_url, username, first_name, last_name} = evt.data
-    const mongoUser = await UpdateUser({
-      clerkId: id,
-      updateData: {
-          name: `${first_name}${last_name ? ` ${last_name}` : ""}`,
-          email: email_addresses[0].email_address,
-          picture: image_url,
-          username: username!, 
-      },
-      path: `/profile/${id}`
-    })
-    console.log(mongoUser)
-    return  Response.json({message: 'OK', user: mongoUser})
+    try {
+      const mongoUser = await UpdateUser({
+        clerkId: id,
+        updateData: {
+            name: `${first_name}${last_name ? ` ${last_name}` : ""}`,
+            email: email_addresses[0].email_address,
+            picture: image_url,
+            username: username!, 
+        },
+        path: `/profile/${id}`
+      })
+
+      console.log(mongoUser)
+      return  Response.json({message: 'OK', user: mongoUser})
+
+    } catch(error) {
+      console.error('Error updating user in MongoDB', error)
+      throw error
+    }
+
+    
   
   }
 

@@ -4,7 +4,7 @@ import EquipmentCard from "@/database/equipment.model";
 import { connectToDatabase } from "../mongoose";
 import Tag from "@/database/tag.model";
 import User from "@/database/user.model";
-import { GetEquipmentParams, CreateEquipmentParams } from "./shared.types";
+import { GetEquipmentParams, CreateEquipmentParams, GetEquipmentByIdParams } from "./shared.types";
 import { Schema } from "mongoose";
 import { EquipmentCardProps } from "@/components/cards/EquipmentCard";
 
@@ -107,6 +107,23 @@ export async function createEquipment (params: CreateEquipmentParams) {
     // create an interaction record for the user's add-equipment action
 
     
+    } catch (error) {
+        console.log(error)
+        throw error;
+    }
+}
+
+export const getEquipmentById = async (params: GetEquipmentByIdParams) => {
+    try {
+        await connectToDatabase()
+
+        const { equipmentId } = params;
+
+        const equipment = await EquipmentCard.findById(equipmentId)
+        .populate({path: 'tag', model: Tag, select: '_id name'})
+        .populate({path: 'author', model: User, select: '_id clerkId name picture'})
+
+        return equipment;
     } catch (error) {
         console.log(error)
         throw error;

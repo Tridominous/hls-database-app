@@ -72,11 +72,11 @@ const EquipmentCard = ({
             </span>
             <Link href={`/equipment/${_id}`}>
                 <Image
-                    src={imgUrl || '/public/assets/images/default_equipment.png'}
+                    src={imgUrl || '/assets/images/default_equipment.png'}
                     alt={`${title} photo missing`}
                     width={150}
                     height={150}
-                    className='my-5 ml-0 rounded-[10px] body-medium text-dark400_light800 mx-10 w-full'
+                    className='my-5 ml-0 rounded-[10px] body-medium text-dark400_light800 mx-10 w-fit'
                 />
                 <h3 className='sm:h3-semibold base-semibold text-dark200_light900 line-clamp-1 flex-1'>
                    {title}
@@ -120,7 +120,7 @@ const EquipmentCard = ({
             <div className='flex-between mt-6 w-full flex-wrap gap-3'>
             {author && author.name && (
                 <Metric
-                    imgUrl="/assets/icons/avatar.svg"
+                    imgUrl={author?.picture || '/assets/images/default_user.png'}
                     alt="user"
                     value={author.name}
                     title={` - added ${getTimestamp(createdAt)}`}

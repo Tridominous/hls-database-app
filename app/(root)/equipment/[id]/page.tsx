@@ -1,13 +1,23 @@
 import Metric from '@/components/shared/Metric'
 import RenderTag from '@/components/shared/RenderTag'
+import SaveEquipment from '@/components/shared/SaveEquipment'
 import { getEquipmentById } from '@/lib/actions/equipment.action'
+import { getUserById } from '@/lib/actions/user.action'
 import { formatNumber, getTimestamp } from '@/lib/utils'
+import { auth } from '@clerk/nextjs/server'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
 const Page = async ({ params, searchParams }: any) => {
    
+    const {userId: clerkId} = auth();
+    let mongoUser;
+
+    if (clerkId) {
+        mongoUser = await getUserById({userId: clerkId});
+    }
+
     const result = await getEquipmentById({ equipmentId: params.id })
     
   return (
@@ -30,6 +40,14 @@ const Page = async ({ params, searchParams }: any) => {
                     </p>
 
                 </Link>
+                <div className='flex justify-items-end'>
+                    <SaveEquipment
+                        type="Equipment"
+                        itemId={JSON.stringify(result._id)}
+                        userId={JSON.stringify(mongoUser._id)}
+                        hasSaved={mongoUser?.saved.includes(result._id)}
+                    />
+                </div>
             </div>
             <h2 className='h2-semibold text-dark-200_light900 mt-3.5 w-full text-left'>
                 

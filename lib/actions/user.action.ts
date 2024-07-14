@@ -2,9 +2,11 @@
 
 import User from "@/database/user.model";
 import { connectToDatabase } from "../mongoose"
-import { CreateUserParams, DeleteUserParams, GetAllUsersParams, GetUserByIdParams, ToggleEquipmentParams, UpdateUserParams } from "./shared.types";
+import { CreateUserParams, DeleteUserParams, GetAllUsersParams, GetSavedEquipmentParams, GetUserByIdParams, ToggleEquipmentParams, UpdateUserParams } from "./shared.types";
 import { revalidatePath } from "next/cache";
 import EquipmentCard from "@/database/equipment.model";
+import { FilterQuery } from "mongoose";
+import Tag from "@/database/tag.model";
 
 export const getUserById = async (params: GetUserByIdParams) => {
     try {
@@ -120,6 +122,68 @@ export async function toggleSaveEquipment(params: ToggleEquipmentParams) {
     revalidatePath(path)
   } catch (error) {
     console.log(error);
+    throw error;
+  }
+}
+
+
+export const getSavedEquipment = async (params: GetSavedEquipmentParams) => {
+  try {
+    await connectToDatabase();
+
+    const { clerkId, searchQuery, filter, page = 1, pageSize = 20 } = params;
+
+    const skipAmount = (page - 1) * pageSize;
+    
+    const query: FilterQuery<typeof EquipmentCard> = searchQuery
+      ? { title: { $regex: new RegExp(searchQuery, 'i') } }
+      : { };
+
+      let sortOptions = {};
+
+      switch (filter) {
+        case "most_recent":
+          sortOptions = { createdAt: -1 }
+          break;
+        case "oldest":
+          sortOptions = { createdAt: 1 }
+          break;
+        case "most_viewed":
+          sortOptions = { views: -1 }
+          break;
+      
+        default:
+          break;
+      }
+
+    const user = await User
+    .findOne({ clerkId })
+    .populate({
+      path: 'saved',
+      match: query,
+      options: {
+        sort: sortOptions,
+        skip: skipAmount,
+        limit: pageSize + 1,
+      },
+      populate: [
+        { path: 'tag', model: Tag, select: "_id name" },
+        { path: 'author', model: User, select: '_id clerkId name picture'}
+      ]
+    })
+
+    const isNext = user.saved.length > pageSize;
+    
+    if(!user) {
+      throw new Error('User not found');
+    }
+
+    const savedEquipment = user.saved;
+
+    return { equipment: savedEquipment, isNext };
+
+  } catch (error) {
+    console.log("Error fetching saved equipment", error);
     throw error;
   }
 }

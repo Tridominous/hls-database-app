@@ -5,7 +5,7 @@
     { name: "Top Contributors", value: "top_contributors" },
   ];
   
-  export const QuestionFilters = [
+  export const EquipmentFilters = [
     { name: "Most Recent", value: "most_recent" },
     { name: "Oldest", value: "oldest" },
     { name: "Most Used", value: "most_used" },

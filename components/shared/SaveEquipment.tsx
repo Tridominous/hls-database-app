@@ -2,9 +2,10 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { toast } from '../ui/use-toast';
-import React from 'react'
+import React, { useEffect } from 'react'
 import Image from 'next/image';
 import { toggleSaveEquipment } from '@/lib/actions/user.action';
+import { viewEquipment } from '@/lib/actions/interaction.action';
 
 interface Props {
     type: string;
@@ -34,9 +35,17 @@ const SaveEquipment = ({
         })
     }
 
+    useEffect(() => {
+     viewEquipment({
+      equipmentId: JSON.parse(itemId),
+      userId: userId ? JSON.parse(userId) : undefined,
+
+     })
+   
+    }, [itemId, userId])
+
   return (
     <div className="flex gap-5">
-
       {type === 'Equipment' && (
         <Image 
           src={hasSaved

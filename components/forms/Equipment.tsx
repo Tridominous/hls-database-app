@@ -117,6 +117,19 @@ const handleImageDelete = (image: string) => {
     setIsSubmitting(true);
   
     try {
+
+       // Check if mongoUserId exists and is a valid JSON string
+    const authorId = mongoUserId ? JSON.parse(mongoUserId) : null;
+
+    if (!authorId) {
+      toast({
+        variant: 'destructive',
+        title: 'Error creating equipment',
+        description: 'User not authenticated.'
+      });
+      throw new Error("User not authenticated");
+    }
+
       const response = await createEquipment({
         title: values.title,
         brandname: values.brandname || "",
@@ -131,12 +144,12 @@ const handleImageDelete = (image: string) => {
         serviceDate: values.serviceDate || new Date(),
         comment: values.comment || "",
         imgUrl: values.imgUrl || "",
-        author: JSON.parse(mongoUserId),
+        author: authorId,
         path: pathname
       });
-  
-      console.log("Equipment created:", response);
-  
+      console.log("createEquuipment response: ", response);
+
+      console.log("About to show success toast");
       toast({
         variant: 'success',
         title: 'Equipment added successfully',
@@ -144,11 +157,14 @@ const handleImageDelete = (image: string) => {
       });
   
       // Reset form
+      console.log('About to reset form')
       form.reset();
       setImagedata(undefined);
   
       // Redirect to home page
+      console.log('About to redirect to home page')
       router.push('/');
+      
     } catch (error) {
       console.error("Failed to create equipment:", error);
       toast({
@@ -157,6 +173,7 @@ const handleImageDelete = (image: string) => {
         description: 'Something went wrong while creating the equipment. Please try again.'
       });
     } finally {
+      console.log('Setting isSubmitting to false')
       setIsSubmitting(false);
     }
   }
@@ -634,7 +651,7 @@ const handleImageDelete = (image: string) => {
                 toast({
                   variant: "destructive",
                   title: "Error! Upload failed.",
-                  description: "Image size is probably too large"
+                  description: "Image size is probably too large or you're not signed In"
                 });
               }}
             />

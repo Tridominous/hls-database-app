@@ -54,7 +54,7 @@ export const deleteUser = async (params: DeleteUserParams) => {
   try {
     await  connectToDatabase();
     const { clerkId } = params;
-    const user = await User.findOneAndDelete({clerkId})
+    const user = await User.findOne({clerkId})
 
     if(!user){
       throw new Error('User not found')
@@ -77,7 +77,7 @@ export const deleteUser = async (params: DeleteUserParams) => {
 export const getAllUsers = async (params: GetAllUsersParams) => {
   try {
     await  connectToDatabase();
-    const { page = 1, pageSize = 20, filter, searchQuery } = params;
+    // const { page = 1, pageSize = 20, filter, searchQuery } = params;
 
     const users = await User.find({})
     .sort({createdAt: -1})

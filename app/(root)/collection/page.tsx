@@ -74,9 +74,9 @@ export default  async function collection() {
 
         <NoResult
           title="There&apos;re no saved equipment to show"
-          description="Be the first to add this equipment!"
-          link="/add-equipment"
-          linkTitle="Add an Equipment"
+          description="Save the equipment that you&apos;re interested in!"
+          link="/"
+          linkTitle="Save an Equipment"
         />}
       </div>
     </>

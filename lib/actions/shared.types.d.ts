@@ -27,7 +27,7 @@ export interface RecommendedParams {
 }
 
 export interface ViewEquipmentParams {
-  EquipmentId: string;
+  equipmentId: string;
   userId: string | undefined;
 }
 

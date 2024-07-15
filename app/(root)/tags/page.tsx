@@ -42,7 +42,7 @@ const page = async () => {
                             </div>
                             <p className='small-medium text-dark400_light500 mt-3.5'>
                                 <span className='body-semibold primary-text-gradient mr-2.5'>
-                                    {tag.equipment?.length ?? 0}+
+                                    {tag.Equipment?.length ?? 0}+
                                 </span> 
                                 Equipment
                             </p>

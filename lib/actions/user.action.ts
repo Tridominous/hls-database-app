@@ -187,3 +187,27 @@ export const getSavedEquipment = async (params: GetSavedEquipmentParams) => {
     throw error;
   }
 }
+
+export const getUserInfo = async (params:  GetUserByIdParams) => {
+  try {
+    await connectToDatabase();
+    
+    const { userId } = params;
+
+    const user = await User.findOne({clerkId: userId})
+
+    if(!user){
+      throw new Error('User not found')
+    }
+
+    const totalEquipment = await EquipmentCard.countDocuments({ author: user._id})
+
+    return {
+      user,
+      totalEquipment
+    }
+  } catch (error) {
+    console.log("Error fetching user info", error);
+    throw error;
+  }
+}

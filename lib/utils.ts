@@ -61,3 +61,14 @@ if(num >= 1000000) {
 }
 
 }
+
+
+interface DateObject {
+  date: string | Date;
+}
+
+export function getJoinedDate(obj: DateObject): string {
+  const date = new Date(obj.date);
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long' };
+  return date.toLocaleDateString('en-US', options);
+}

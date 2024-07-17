@@ -1,3 +1,4 @@
+import EquipmentTab from '@/components/shared/EquipmentTab';
 import { Button } from '@/components/ui/button';
 import { getUserInfo } from '@/lib/actions/user.action';
 import { getJoinedDate } from '@/lib/utils';
@@ -23,15 +24,15 @@ const Page = async ({params, searchParams}: URLProps) => {
                    className='rounded-full object-cover'
                 />
                 <div className='mt-3'>
-                    <h2 className='h2-bold text-dark-100_light900'>{userInfo.user.name}</h2>
-                    <p className='paragraph-regular text-dark-200_light800'>{userInfo.user.username}</p>
-                    <p className='paragraph-regular text-dark-200_light800'>{userInfo.user.email}</p>
+                    <h2 className='h2-bold text-dark100_light900'>{userInfo.user.name}</h2>
+                    <p className='paragraph-regular text-dark200_light800'>{userInfo.user.username}</p>
+                    <p className='paragraph-regular text-dark200_light800'>{userInfo.user.email}</p>
                         
                     <div className='mt-5 flex flex-wrap items-center justify-start gap-5'>
                         Joined on {getJoinedDate({ date: userInfo.user.joinedAt })}
                     </div>
                     {userInfo.user.bio && (
-                        <p className='paragraph-regular text-dark-200_light800'>
+                        <p className='paragraph-regular text-dark200_light800 mt-8'>
                             {userInfo.user.bio}
                         </p>
                     )}
@@ -42,7 +43,7 @@ const Page = async ({params, searchParams}: URLProps) => {
                     {
                         clerkId === userInfo.user.clerkId && (
                            <Link href='/profile/edit' className='btn btn-primary'>
-                               <Button className='paragraph-medium btn-secondary text-dark-300_light900 min-h-[46px] min-w-[175px] px-4 py-3'>
+                               <Button className='paragraph-medium btn-secondary text-dark300_light900 min-h-[46px] min-w-[175px] px-4 py-3'>
                                 Edit Profile
                                 </Button>
                            </Link>
@@ -51,8 +52,15 @@ const Page = async ({params, searchParams}: URLProps) => {
                 </SignedIn>
             </div>
         </div>
-        <div className='mt-10 flex gap-10'>
-            <h2>Equipment</h2>
+        <div className='mt-10 flex flex-col'>
+            <h2 className='h2-bold text-dark100_light900 mb-5'>Equipment</h2>
+            <div className='w-full'>
+                <EquipmentTab 
+                searchParams={searchParams} 
+                userId={userInfo?.user._id} 
+                clerkId={userInfo?.user.clerkId}
+                />
+            </div>
         </div>
     </>
   )

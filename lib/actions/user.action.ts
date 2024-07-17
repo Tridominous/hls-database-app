@@ -2,7 +2,7 @@
 
 import User from "@/database/user.model";
 import { connectToDatabase } from "../mongoose"
-import { CreateUserParams, DeleteUserParams, GetAllUsersParams, GetSavedEquipmentParams, GetUserByIdParams, ToggleEquipmentParams, UpdateUserParams } from "./shared.types";
+import { CreateUserParams, DeleteUserParams, GetAllUsersParams, GetSavedEquipmentParams, GetUserByIdParams, GetUserStatsParams, ToggleEquipmentParams, UpdateUserParams } from "./shared.types";
 import { revalidatePath } from "next/cache";
 import EquipmentCard from "@/database/equipment.model";
 import { FilterQuery } from "mongoose";
@@ -209,5 +209,27 @@ export const getUserInfo = async (params:  GetUserByIdParams) => {
   } catch (error) {
     console.log("Error fetching user info", error);
     throw error;
+  }
+}
+
+
+export const getUserEquipment = async (params: GetUserStatsParams) => {
+  try {
+    await connectToDatabase();
+
+    const {userId, page= 1, pageSize = 10} = params;
+
+    const totalEquipment = await EquipmentCard.countDocuments({author: userId});
+
+    const userEquipment = await EquipmentCard.find({author: userId})
+    .sort({views: -1})
+    .populate('tag', '_id name')
+    .populate('author', '_id clerkId name picture')
+
+    return { totalEquipment, userEquipment}
+  } catch (error) {
+    console.log("Error fetching user equipment", error);
+    throw error;
+    
   }
 }

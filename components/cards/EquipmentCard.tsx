@@ -8,6 +8,7 @@ import Image from 'next/image';
 // Define the EquipmentProps interface
 export interface EquipmentCardProps { //different properties like purchasedate, price can be added 
     _id: string;
+    clerkId?: string | null;
     imgUrl: string;
     title: string;
     brandname?: string;
@@ -47,6 +48,7 @@ const getTagName = (tag: { _id: string; name: string } | string): string => {
 // Define the EquipmentCard component
 const EquipmentCard = ({
     _id,
+    clerkId,
     imgUrl,
     title,
     brandname,

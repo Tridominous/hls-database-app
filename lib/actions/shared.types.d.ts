@@ -55,7 +55,7 @@ export interface CreateEquipmentParams {
   comment?: string;
   tag: string | Schema.Types.ObjectId;
   imgUrl: string | File;
-  author: Schema.Types.ObjectId | IUser;
+  author: Schema.Types.ObjectId | IUser | string;
   path: string;
 }
 
@@ -71,7 +71,18 @@ export interface EquimentParams {
 export interface EditEquipmentParams {
   equipmentId: string;
   title: string;
-  content: string;
+  imgUrl: string | File;
+  brandname?: string;
+  modelname?: string;
+  serialNumber?: string;
+  assetTag?: string;
+  subunits?:  Subunits[]; 
+  labNumber: string;
+  labName?: string;
+  team: string;
+  tag: string | Schema.Types.ObjectId;
+  serviceDate?: Date;
+  comment?: string;
   path: string;
 }
 
@@ -144,6 +155,10 @@ export interface DeleteUserParams {
 }
 
 
+export interface DeleteEquipmentParams {
+  equipmentId: string;
+  path: string;
+}
 
 
 

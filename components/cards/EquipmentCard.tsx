@@ -4,11 +4,13 @@ import RenderTag from '../shared/RenderTag';
 import Metric from '../shared/Metric';
 import { formatNumber, getTimestamp } from '@/lib/utils';
 import Image from 'next/image';
+import { SignedIn } from '@clerk/nextjs';
+import EditDeleteAction from '../shared/EditDeleteAction';
 
 // Define the EquipmentProps interface
 export interface EquipmentCardProps { //different properties like purchasedate, price can be added 
     _id: string;
-    clerkId?: string | null;
+    clerkId: string | null;
     imgUrl: string;
     title: string;
     brandname?: string;
@@ -31,6 +33,7 @@ export interface EquipmentCardProps { //different properties like purchasedate, 
     comment?: string;
     tag: { _id: string; name: string } | string;
     author: {
+        clerkId: string;
         _id: string;
         name: string;
         picture: string;
@@ -66,6 +69,7 @@ const EquipmentCard = ({
     views,
     createdAt,
 }: EquipmentCardProps) => {
+    const showActionButtons = clerkId && clerkId === author.clerkId
   return (
     <div className='card-wrapper rounded-[10px] p-9 sm:px-11 border-separate shadow-lg items-center'>
         <div className='flex flex-col-reverse items-start justify-between gap-5 sm:flex-row'>
@@ -110,7 +114,16 @@ const EquipmentCard = ({
                 { serviceDate && <h5 className='body-medium text-dark400_light800'>Service Date: {serviceDate instanceof Date ? serviceDate.toDateString() : 'Invalid Date'}</h5>}
                 { comment && <h5 className='body-medium text-dark400_light800 line-clamp-1 flex-1'>Comment: {comment}</h5> }
             </Link>
+
             {/* if signed in add edit delete actions */}
+            <SignedIn>
+                {
+                    showActionButtons && (
+                        <EditDeleteAction type="Equipment" itemId={JSON.stringify(_id)} />
+                    )
+                }
+            </SignedIn>
+
         </div>
 
         <div className='mt-3.5 flex flex-wrap gap-2'>

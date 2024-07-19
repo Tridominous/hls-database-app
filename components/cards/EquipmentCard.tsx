@@ -10,7 +10,7 @@ import EditDeleteAction from '../shared/EditDeleteAction';
 // Define the EquipmentProps interface
 export interface EquipmentCardProps { //different properties like purchasedate, price can be added 
     _id: string;
-    clerkId: string | null;
+    clerkId?: string | null;
     imgUrl: string;
     title: string;
     brandname?: string;

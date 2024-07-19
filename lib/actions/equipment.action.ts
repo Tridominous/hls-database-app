@@ -397,3 +397,24 @@ export async function editEquipment(params: EditEquipmentParams) {
       throw error;
     }
   }
+
+
+  export const getTopEquipment = async () => {
+    try {
+      await connectToDatabase();
+
+      const topEquipment = await EquipmentCard.find({})
+      .sort({ views: -1 })
+      .limit(10)
+
+      return topEquipment
+    } catch (error) {
+      console.error("Error getting top equipment", error);
+      if (error instanceof Error) {
+        console.error("Get top equipment Error message:", error.message);
+        console.error("Get top equipment Error stack:", error.stack);
+        }
+        throw error;
+      
+    }
+  }

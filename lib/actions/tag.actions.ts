@@ -78,3 +78,23 @@ export const getEquipmentByTagId = async (params: GetEquipmentByTagIdParams) => 
         throw error;  
     }
 }
+
+
+export const getTopEquipmentTags = async () => {
+ try {
+    await connectToDatabase();
+
+    const topTags = await Tag.aggregate([
+       { $project: { name: 1, numberOfEquipment: { $size: "$Equipment"}}},
+       { $sort: { numberOfEquipment: -1}},
+       { $limit: 10}
+    ])
+    
+
+        return topTags
+ } catch (error) {
+    console.log('Error getting tags', error)
+    throw error;
+  
+ }
+}

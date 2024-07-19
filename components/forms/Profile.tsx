@@ -33,11 +33,7 @@ const Profile = ({clerkId, user}: Props) => {
     const router = useRouter();
     const pathname = usePathname();
 
-    const formSchema = z.object({
-        username: z.string().min(2, {
-          message: "Username must be at least 2 characters.",
-        }),
-      })
+  
 
    // 1. Define your form.
   const form = useForm<z.infer<typeof ProfileSchema>>({
@@ -61,7 +57,7 @@ const Profile = ({clerkId, user}: Props) => {
         await updateUser({
             clerkId,
             updateData: {
-                name: values.username,
+                name: values.name,
                 username: values.username,
                 email: values.email,
                 bio: values.bio

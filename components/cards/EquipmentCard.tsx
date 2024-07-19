@@ -31,7 +31,7 @@ export interface EquipmentCardProps { //different properties like purchasedate, 
     team: string;
     serviceDate?: Date;
     comment?: string;
-    tag: { _id: string; name: string } | string;
+    tag: { _id: string; name: string } ;
     author: {
         clerkId: string;
         _id: string;

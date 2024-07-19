@@ -8,12 +8,15 @@ import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
 import { Button } from "@/components/ui/button";
 import { HomePageFilters } from "@/constants/filters";
 import { getEquipment } from "@/lib/actions/equipment.action";
+import { SearchParamsProps } from "@/types";
 import Link from "next/link";
 
 
  
-export default  async function Home() {
-  const equipment = await getEquipment({});
+export default  async function Home({searchParams}: SearchParamsProps) {
+  const equipment = await getEquipment({
+    searchQuery: searchParams.q
+  });
 
 
   console.log(equipment)
@@ -65,7 +68,7 @@ export default  async function Home() {
             team={equipment.team}
             serviceDate={equipment.serviceDate ? new Date(equipment.serviceDate) : undefined}
             comment={equipment.comment}
-            tag={equipment.tag && (typeof equipment.tag === 'string' ? equipment.tag : equipment.tag.name)}
+            tag={equipment.tag}
             author={equipment.author}
             
             views={equipment.views}

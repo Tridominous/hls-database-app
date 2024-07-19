@@ -8,20 +8,32 @@ import { GetEquipmentParams, CreateEquipmentParams, GetEquipmentByIdParams, Dele
 import { EquipmentCardProps } from "@/components/cards/EquipmentCard";
 import Interaction from "@/database/interaction.model";
 import { revalidatePath } from "next/cache";
-import { Types } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 
 
-export async function getEquipment(params: GetEquipmentParams): Promise<EquipmentCardProps[]> {
+export async function getEquipment(params: GetEquipmentParams): Promise<EquipmentCardProps[]>  {
     try {
         await connectToDatabase();
 
-        let query = {};
+        const { searchQuery } = params;
+
+        let query: FilterQuery<typeof EquipmentCard> = {}
+        if (searchQuery) {
+          const regexQuery = new RegExp(searchQuery, "i");
+          query.$or = [
+            { title: regexQuery },
+            { brandname: regexQuery },
+            { 'tag.name': regexQuery }  // Changed this to search in tag name
+          ]
+        }
+
+       
 
         // If tag is provided, find the tag by name first
         if (params.tag && typeof params.tag === 'string') {
             const tag = await Tag.findOne({ name: params.tag });
             if (tag) {
-                query = { tag: tag._id };
+                query.tag = tag._id ;
             } else {
                 // If tag doesn't exist, return empty array
                 return [];
@@ -31,12 +43,16 @@ export async function getEquipment(params: GetEquipmentParams): Promise<Equipmen
         const equipment = await EquipmentCard.find(query)
         .populate({path: "tag", model: Tag})
         .populate({path: 'author', model: User})
-        .lean()
+        .lean<EquipmentCardProps[]>()
         
         // Transform the data to ensure tag is an object with a name property
         const transformedEquipment = equipment.map(item => ({
-            ...item,
-            tag: typeof item.tag === 'string' ? { name: item.tag } : item.tag
+          ...item,
+          _id: item._id.toString(),
+          tag: {
+            _id: item.tag._id.toString(),
+            name: item.tag.name
+          }
         }));
         
         return JSON.parse(JSON.stringify(transformedEquipment)) as EquipmentCardProps[];
@@ -47,6 +63,7 @@ export async function getEquipment(params: GetEquipmentParams): Promise<Equipmen
     }
 }
 
+ 
 export async function createEquipment (params: CreateEquipmentParams) {
     
     try {

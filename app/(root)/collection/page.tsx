@@ -7,19 +7,21 @@ import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
 import { EquipmentFilters } from "@/constants/filters";
 import { getEquipment } from "@/lib/actions/equipment.action";
 import { getSavedEquipment } from "@/lib/actions/user.action";
+import { SearchParamsProps } from "@/types";
 import { auth } from "@clerk/nextjs/server";
 
 
 
  
-export default  async function collection() {
+export default  async function collection({searchParams}: SearchParamsProps) {
 
   const { userId } = auth();
 
   if(!userId) return null;
 
   const result = await getSavedEquipment({
-    clerkId: userId
+    clerkId: userId,
+    searchQuery: searchParams.q
   });
 
 

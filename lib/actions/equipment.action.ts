@@ -208,99 +208,192 @@ export const deleteEquipment = async (params: DeleteEquipmentParams) => {
 // }
 
 
-// import { Tag, EquipmentCard } from './your-models-file';
-// import { connectToDatabase } from './your-database-connection-file';
-// import { Types } from 'mongoose';
-// import { revalidatePath } from 'next/cache';
+
+
+// export async function editEquipment(params: EditEquipmentParams) {
+//     try {
+//         // Connect to DB
+//         await connectToDatabase();
+
+//         const {
+//             equipmentId,
+//             title,
+//             brandname,
+//             modelname,
+//             serialNumber,
+//             assetTag,
+//             subunits,
+//             labNumber,
+//             labName,
+//             team,
+//             serviceDate,
+//             comment,
+//             tag,
+//             imgUrl,
+//             path
+//         } = params;
+
+//         // Find the equipment
+//         const equipment = await EquipmentCard.findByIdAndUpdate(equipmentId, {
+//             title,
+//             brandname,
+//             modelname,
+//             serialNumber,
+//             assetTag,
+//             subunits,
+//             labNumber,
+//             labName,
+//             team,
+//             serviceDate,
+//             comment,
+//             tag,
+//             imgUrl,
+//         },
+//         {new: true}
+//     ).populate({
+//         path: 'tag',
+//         model: 'Tag',
+//     });
+
+//         if (!equipment) {
+//             throw new Error('Equipment not found');
+//         }
+
+//         const actualTag = equipment.tag.name;
+//         const removedTag = equipment.tag.name !== tag ? equipment.tag._id : null;
+
+//         const newTag = tag !== actualTag ? tag: null; // If the tag is the same, don't update it
+
+//         if(removedTag) {
+//             await EquipmentCard.findByIdAndUpdate(equipment._id, {
+//                 $unset: {tag: removedTag}
+//             });
+
+//             await Tag.findByIdAndUpdate(removedTag, {
+//                 $pull: {equipment: equipment._id}
+//             });
+//         }
+
+//         if(newTag) {
+//             let tagDocument = await Tag.findOneAndUpdate(
+//                 {name: { $regex: new RegExp(`^${newTag}`, 'i')}},
+//                 { $setOnInsert: { name: newTag}, $push: { equipment: equipment._id }},
+//                 { upsert: true, new: true }
+//             );
+
+//             await EquipmentCard.findByIdAndUpdate(equipment._id, {
+//                 $set: {tag: tagDocument._id},
+//             })
+//         }
+
+//         revalidatePath(path);
+
+//          // Save the updated equipment
+//         const updatedEquipment = await equipment.save();
+
+//         // Revalidate the path
+//         revalidatePath(path);
+
+//         // Convert to plain object and serialize
+//         const plainEquipment = updatedEquipment.toObject();
+//         const serializedEquipment = JSON.parse(JSON.stringify(plainEquipment));
+
+//         return serializedEquipment;
+      
+
+//     } catch (error) {
+//         console.error("Error editing the equipment", error);
+//         if (error instanceof Error) {
+//             console.error("Edit func Error message:", error.message);
+//             console.error("Edit func Error stack:", error.stack);
+//         }
+//         throw error;
+//     }
+// }
+
+
 
 export async function editEquipment(params: EditEquipmentParams) {
     try {
-        // Connect to DB
-        await connectToDatabase();
-
-        const {
-            equipmentId,
-            title,
-            brandname,
-            modelname,
-            serialNumber,
-            assetTag,
-            subunits,
-            labNumber,
-            labName,
-            team,
-            serviceDate,
-            comment,
-            tag,
-            imgUrl,
-            path
-        } = params;
-
-        // Find the equipment
-        const equipment = await EquipmentCard.findById(new Types.ObjectId(equipmentId));
-
-        if (!equipment) {
-            throw new Error('Equipment not found');
-        }
-
-        // Handle tag update
-        if (tag) {
-            let existingTag = await Tag.findOne({ name: { $regex: new RegExp(`^${tag}$`, "i") } });
-
-            if (!existingTag) {
-                existingTag = await Tag.create({ name: tag });
-            }
-
-            // Remove equipment from old tag
-            if (equipment.tag) {
-                await Tag.findByIdAndUpdate(equipment.tag, {
-                    $pull: { Equipment: equipment._id }
-                });
-            }
-
-            // Update equipment with new tag
-            equipment.tag = existingTag._id;
-
-            // Add equipment to new tag
-            await Tag.findByIdAndUpdate(existingTag._id, {
-                $addToSet: { Equipment: equipment._id }
-            });
-        }
-
-        // Update the equipment fields
-        Object.assign(equipment, {
-            title,
-            brandname,
-            modelname,
-            serialNumber,
-            assetTag,
-            subunits,
-            labNumber,
-            labName,
-            team,
-            serviceDate,
-            comment,
-            imgUrl
-        });
-
-        // Save the updated equipment
-        const updatedEquipment = await equipment.save();
-
-        // Revalidate the path
-        revalidatePath(path);
-
-        // Convert to plain object and serialize
-        const plainEquipment = updatedEquipment.toObject();
-        const serializedEquipment = JSON.parse(JSON.stringify(plainEquipment));
-
-        return serializedEquipment;
-
+      // Connect to DB
+      await connectToDatabase();
+  
+      const {
+        equipmentId,
+        title,
+        brandname,
+        modelname,
+        serialNumber,
+        assetTag,
+        subunits,
+        labNumber,
+        labName,
+        team,
+        serviceDate,
+        comment,
+        tag,
+        imgUrl,
+        path
+      } = params;
+  
+      // Find and update the equipment
+      const equipment = await EquipmentCard.findByIdAndUpdate(equipmentId, {
+        title,
+        brandname,
+        modelname,
+        serialNumber,
+        assetTag,
+        subunits,
+        labNumber,
+        labName,
+        team,
+        serviceDate,
+        comment,
+        tag,
+        imgUrl,
+      }, { new: true }).populate('tag');
+  
+      if (!equipment) {
+        throw new Error('Equipment not found');
+      }
+  
+      const actualTag = equipment.tag?.name || null;
+      const removedTag = actualTag !== tag ? equipment.tag?._id : null;
+      const newTag = actualTag !== tag ? tag : null;
+  
+      if (removedTag) {
+        await EquipmentCard.findByIdAndUpdate(equipment._id, { $unset: { tag: "" } });
+        await Tag.findByIdAndUpdate(removedTag, { $pull: { equipment: equipment._id } });
+      }
+  
+      if (newTag) {
+        const tagDocument = await Tag.findOneAndUpdate(
+          { name: { $regex: new RegExp(`^${newTag}$`, 'i') } },
+          { $setOnInsert: { name: newTag }, $push: { equipment: equipment._id } },
+          { upsert: true, new: true }
+        );
+  
+        await EquipmentCard.findByIdAndUpdate(equipment._id, { $set: { tag: tagDocument._id } });
+      }
+  
+      // Save the updated equipment
+      const updatedEquipment = await equipment.save();
+  
+      // Revalidate the path
+      revalidatePath(path);
+  
+      // Convert to plain object and serialize
+      const plainEquipment = updatedEquipment.toObject();
+      const serializedEquipment = JSON.parse(JSON.stringify(plainEquipment));
+  
+      return serializedEquipment;
+  
     } catch (error) {
-        console.error("Error editing the equipment", error);
-        if (error instanceof Error) {
-            console.error("Edit func Error message:", error.message);
-            console.error("Edit func Error stack:", error.stack);
-        }
-        throw error;
+      console.error("Error editing the equipment", error);
+      if (error instanceof Error) {
+        console.error("Edit func Error message:", error.message);
+        console.error("Edit func Error stack:", error.stack);
+      }
+      throw error;
     }
-}
+  }

@@ -65,7 +65,7 @@ const Equipment = ({type, mongoUserId, equipmentDetails}: Props) => {
         serviceDate: parsedEquipmentDetails.serviceDate ||  new Date('2024-06-13'),
         tag:parsedEquipmentDetails?.tag?.name || "",
         comment: parsedEquipmentDetails.comment ||  "",
-        imgUrl: parsedEquipmentDetails.imgUrl ||  "",
+        imgUrl: "",
     },
   })
 
@@ -124,23 +124,21 @@ const handleImageDelete = (image: string) => {
     setIsSubmitting(true);
   
     try {
-
-       // Check if mongoUserId exists and is a valid JSON string
-    const authorId = JSON.parse(mongoUserId);
-      console.log("Checking authorId", authorId)
-
-    if (!authorId) {
-      toast({
-        variant: 'destructive',
-        title: 'Error creating equipment',
-        description: 'User not authenticated.'
-      });
-      throw new Error("User not authenticated");
-    }
-
+      // Check if mongoUserId exists and is a valid JSON string
+      const authorId = JSON.parse(mongoUserId);
+      console.log("Checking authorId", authorId);
   
-    if (type === 'Edit') {
-      const editParams: EditEquipmentParams = {
+      if (!authorId) {
+        toast({
+          variant: 'destructive',
+          title: 'Error creating equipment',
+          description: 'User not authenticated.'
+        });
+        throw new Error("User not authenticated");
+      }
+  
+      if (type === 'Edit') {
+        const editParams: EditEquipmentParams = {
           equipmentId: parsedEquipmentDetails._id,
           title: values.title,
           brandname: values.brandname,
@@ -156,101 +154,110 @@ const handleImageDelete = (image: string) => {
           comment: values.comment,
           imgUrl: values.imgUrl,
           path: pathname
-      };
-      try {
-        const updatedEquipment = await editEquipment(editParams);
-        console.log("Equipment updated:", updatedEquipment);
-
-        if (updatedEquipment) {
-          console.log("Update successful, showing toast");
+        };
+  
+        try {
+          console.log('Trying to edit equipment');
+          const updatedEquipment = await editEquipment(editParams);
+          console.log("Equipment updated:", updatedEquipment);
+  
+          if (updatedEquipment) {
+            console.log("Update successful, showing toast");
             toast({
-                variant: 'success',
-                title: 'Equipment updated successfully',
-                description: 'Your equipment has been updated in the database.'
+              variant: 'success',
+              title: 'Equipment updated successfully',
+              description: 'Your equipment has been updated in the database.'
             });
-
+  
             console.log("Redirecting to equipment page");
             router.push(`/equipment/${updatedEquipment._id}`);
-
-        } else {
-          console.log("Update failed")
+  
+            // Reset form
+            console.log('About to reset form');
+            form.reset();
+            setImagedata(undefined);
+          } else {
+            console.log("Update failed");
             throw new Error('Failed to update equipment');
+          }
+        } catch (error: any) {
+          console.log("Error editing equipment", error);
+          if (error instanceof Error) {
+            console.error("Error message:", error.message);
+            console.error("Error stack:", error.stack);
+          }
+          toast({
+            variant: 'destructive',
+            title: 'Error editing equipment',
+            description: `Something went wrong: ${error.message}`
+          });
         }
-
-        // Reset form
-        console.log('About to reset form')
-        form.reset();
-        setImagedata(undefined);
-      } catch(error: any) {
-        console.log("Error editing equipment", error)
-        if (error instanceof Error) {
-          console.error("Error message:", error.message);
-          console.error("Error stack:", error.stack);
-      }
-      toast({
-          variant: 'destructive',
-          title: 'Error editing equipment',
-          description: `Something went wrong: ${error.message}`
-      });
-      }
-        
-
-    } else {
-      const response = await createEquipment({
-        title: values.title,
-        brandname: values.brandname || "",
-        modelname: values.modelname || "",
-        serialNumber: values.serialNumber || "",
-        assetTag: values.assetTag || "",
-        subunits: values.subunits || [],
-        labNumber: values.labNumber || "",
-        labName: values.labName || "",
-        team: values.team || "",
-        tag: values.tag || "",
-        serviceDate: values.serviceDate || new Date(),
-        comment: values.comment || "",
-        imgUrl: values.imgUrl || "",
-        author: authorId,
-        path: pathname
-      });
-      console.log("createEquuipment response: ", response);
-
-      console.log("About to show success toast");
-      toast({
-        variant: 'success',
-        title: 'Equipment added successfully',
-        description: 'Your equipment has been added to the database.'
-      });
+      } else {
+        try {
+          const response = await createEquipment({
+            title: values.title,
+            brandname: values.brandname || "",
+            modelname: values.modelname || "",
+            serialNumber: values.serialNumber || "",
+            assetTag: values.assetTag || "",
+            subunits: values.subunits || [],
+            labNumber: values.labNumber || "",
+            labName: values.labName || "",
+            team: values.team || "",
+            tag: values.tag || "",
+            serviceDate: values.serviceDate || new Date(),
+            comment: values.comment || "",
+            imgUrl: values.imgUrl || "",
+            author: authorId,
+            path: pathname
+          });
+          console.log("createEquipment response: ", response);
   
-      // Reset form
-      console.log('About to reset form')
-      form.reset();
-      setImagedata(undefined);
+          console.log("About to show success toast");
+          toast({
+            variant: 'success',
+            title: 'Equipment added successfully',
+            description: 'Your equipment has been added to the database.'
+          });
   
-      // Redirect to home page
-      console.log('About to redirect to home page')
-      router.push('/');
-      
-    }
-      
-    } catch (error) {
-      console.error("Failed to create equipment:", error);
-
+          // Reset form
+          console.log('About to reset form');
+          form.reset();
+          setImagedata(undefined);
+  
+          // Redirect to home page
+          console.log('About to redirect to home page');
+          router.push('/');
+        } catch (error: any) {
+          console.error("Error creating equipment", error);
+          if (error instanceof Error) {
+            console.error("Error message:", error.message);
+            console.error("Error stack:", error.stack);
+          }
+          toast({
+            variant: 'destructive',
+            title: 'Error creating equipment',
+            description: `Something went wrong while creating the equipment. Please try again. ${error.message}`
+          });
+        }
+      }
+    } catch (error: any) {
+      console.error("Failed to process the form:", error);
       if (error instanceof Error) {
         console.error("Error message:", error.message);
         console.error("Error stack:", error.stack);
       }
-
       toast({
         variant: 'destructive',
-        title: 'Error creating equipment',
-        description: 'Something went wrong while creating the equipment. Please try again.'
+        title: 'Error',
+        description: `Unexpected error: ${error.message}`
       });
     } finally {
-      console.log('Setting isSubmitting to false')
+      console.log('Setting isSubmitting to false');
       setIsSubmitting(false);
     }
   }
+  
 
   return (
     <Form {...form}>
@@ -687,10 +694,13 @@ const handleImageDelete = (image: string) => {
 />
 
 
-
+{/* 
 <Button disabled={isSubmitting} className="primary-gradient w-fit min-h-[46px] px-4 py-3 !text-light-900" type="submit">
   {isSubmitting ? 'Submitting...' : (type === 'Edit' ? 'Edit Equipment' : 'Add Equipment')}
-</Button>
+</Button> */}
+<Button className="primary-gradient w-fit min-h-[46px] px-4 py-3 !text-light-900" type="submit" disabled={isSubmitting}>
+        {isSubmitting ? 'Submitting...' : type === 'Edit' ? 'Update Equipment' : 'Add Equipment'}
+      </Button>
       </form>
     </Form>
   )

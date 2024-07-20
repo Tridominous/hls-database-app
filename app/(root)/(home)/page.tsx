@@ -1,4 +1,4 @@
-// "use client"
+
 
 import EquipmentCard, { EquipmentCardProps } from "@/components/cards/EquipmentCard";
 import HomeFilters from "@/components/home/HomeFilters";
@@ -11,11 +11,12 @@ import { getEquipment } from "@/lib/actions/equipment.action";
 import { SearchParamsProps } from "@/types";
 import Link from "next/link";
 
-
+  
  
 export default  async function Home({searchParams}: SearchParamsProps) {
   const equipment = await getEquipment({
-    searchQuery: searchParams.q
+    searchQuery: searchParams.q,
+    filter: searchParams.filter
   });
 
 

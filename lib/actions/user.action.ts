@@ -79,7 +79,7 @@ export const getAllUsers = async (params: GetAllUsersParams) => {
     await  connectToDatabase();
     // const { page = 1, pageSize = 20, filter, searchQuery } = params;
 
-    const { searchQuery } = params;
+    const { searchQuery, filter } = params;
 
     const query: FilterQuery<typeof User> = {};
     if (searchQuery) {
@@ -88,8 +88,22 @@ export const getAllUsers = async (params: GetAllUsersParams) => {
         { email: { $regex: searchQuery, $options: "i" } },
       ]
     }
+
+    let sortOptions = {};
+
+    switch (filter) {
+      case "new_users":
+        sortOptions = { joinedAt: -1 }
+        break;
+      case "old_users":
+        sortOptions = { joinedAt: 1 }
+        break;
+    
+      default:
+        break;
+    }
     const users = await User.find(query)
-    .sort({createdAt: -1})
+    .sort(sortOptions)
 
       return {users};
 

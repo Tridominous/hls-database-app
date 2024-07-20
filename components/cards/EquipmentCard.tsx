@@ -6,10 +6,11 @@ import { formatNumber, getTimestamp } from '@/lib/utils';
 import Image from 'next/image';
 import { SignedIn } from '@clerk/nextjs';
 import EditDeleteAction from '../shared/EditDeleteAction';
+import mongoose from 'mongoose';
 
 // Define the EquipmentProps interface
 export interface EquipmentCardProps { //different properties like purchasedate, price can be added 
-    _id: string;
+    _id: mongoose.Types.ObjectId | string;
     clerkId?: string | null;
     imgUrl: string;
     title: string;
@@ -18,30 +19,32 @@ export interface EquipmentCardProps { //different properties like purchasedate, 
     serialNumber?: string;
     assetTag?: string;
     subunits?: {
-        _id: string;
-        title: string;
-        brandname: string;
-        modelname: string;
-        serialNumber: string;
-        assetTag: string;
-        serviceDate?: Date;
+      _id: mongoose.Types.ObjectId | string;
+      title: string;
+      brandname: string;
+      modelname: string;
+      serialNumber: string;
+      assetTag: string;
+      serviceDate?: Date;
     }[];
     labNumber: string;
     labName?: string;
     team: string;
     serviceDate?: Date;
     comment?: string;
-    tag: { _id: string; name: string } ;
-    author: {
+    tag: {
+        _id: mongoose.Types.ObjectId | string;
+        name: string;
+      };
+      author: {
         clerkId: string;
-        _id: string;
+        _id: mongoose.Types.ObjectId | string;
         name: string;
         picture: string;
-    };
-    views: number;
-
-    createdAt: Date;
-}
+      };
+      views: number;
+      createdAt: Date;
+    }
 
 const getTagName = (tag: { _id: string; name: string } | string): string => {
     return typeof tag === 'object' && tag !== null ? tag.name : tag;
@@ -128,7 +131,7 @@ const EquipmentCard = ({
 
         <div className='mt-3.5 flex flex-wrap gap-2'>
            
-        <RenderTag name={getTagName(tag)}/>
+        <RenderTag name={getTagName(tag.name)}/>
           
         </div>
 

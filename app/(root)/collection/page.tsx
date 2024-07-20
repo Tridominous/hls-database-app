@@ -1,11 +1,10 @@
-// "use client"
+
 
 import EquipmentCard, { EquipmentCardProps } from "@/components/cards/EquipmentCard";
 import Filter from "@/components/shared/Filter";
 import NoResult from "@/components/shared/NoResult";
 import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
 import { EquipmentFilters } from "@/constants/filters";
-import { getEquipment } from "@/lib/actions/equipment.action";
 import { getSavedEquipment } from "@/lib/actions/user.action";
 import { SearchParamsProps } from "@/types";
 import { auth } from "@clerk/nextjs/server";
@@ -21,7 +20,8 @@ export default  async function collection({searchParams}: SearchParamsProps) {
 
   const result = await getSavedEquipment({
     clerkId: userId,
-    searchQuery: searchParams.q
+    searchQuery: searchParams.q,
+    filter: searchParams.filter,
   });
 
 

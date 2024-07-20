@@ -2,7 +2,6 @@
   export const UserFilters = [
     { name: "New Users", value: "new_users" },
     { name: "Old Users", value: "old_users" },
-    { name: "Top Contributors", value: "top_contributors" },
   ];
   
   export const EquipmentFilters = [
@@ -15,12 +14,12 @@
     { name: "Popular", value: "popular" },
     { name: "Recent", value: "recent" },
     { name: "Name", value: "name" },
-    { name: "Old", value: "old" },
+    { name: "Oldest", value: "oldest" },
   ];
   
   export const HomePageFilters = [
     { name: "Newest", value: "newest" },
-    { name: "Recommended", value: "recommended" },
+    { name: "Oldest", value: "oldest" },
     { name: "Frequent", value: "frequent" },
   ];
   

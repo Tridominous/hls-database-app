@@ -15,7 +15,7 @@ export async function getEquipment(params: GetEquipmentParams): Promise<Equipmen
     try {
         await connectToDatabase();
 
-        const { searchQuery } = params;
+        const { searchQuery, filter } = params;
 
         let query: FilterQuery<typeof EquipmentCard> = {}
         if (searchQuery) {
@@ -27,6 +27,22 @@ export async function getEquipment(params: GetEquipmentParams): Promise<Equipmen
           ]
         }
 
+        let sortOptions = {}
+
+        switch(filter) {
+          case "newest":
+            sortOptions = { createdAt: -1 }
+            break;
+            case "oldest":
+              sortOptions = { createdAt: 1 }
+              break;
+              case "frequent":
+                sortOptions = { views: -1 }
+                break;
+                default:
+                  sortOptions = { createdAt: -1 }
+                  break;
+        }
        
 
         // If tag is provided, find the tag by name first
@@ -44,6 +60,7 @@ export async function getEquipment(params: GetEquipmentParams): Promise<Equipmen
         .populate({path: "tag", model: Tag})
         .populate({path: 'author', model: User})
         .lean<EquipmentCardProps[]>()
+        .sort(sortOptions)
         
         // Transform the data to ensure tag is an object with a name property
         const transformedEquipment = equipment.map(item => ({

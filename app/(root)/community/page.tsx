@@ -1,3 +1,5 @@
+
+
 import UserCard from '@/components/cards/UserCard'
 import Filter from '@/components/shared/Filter'
 import LocalSearchbar from '@/components/shared/search/LocalSearchbar'
@@ -9,7 +11,8 @@ import React from 'react'
 
 const page = async ({searchParams}: SearchParamsProps) => {
     const result = await getAllUsers({
-      searchQuery: searchParams.q
+      searchQuery: searchParams.q,
+      filter: searchParams.filter,
     })
   return (
     <>

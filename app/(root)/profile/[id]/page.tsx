@@ -11,37 +11,49 @@ import React from 'react'
 
 const Page = async ({params, searchParams}: URLProps) => {
     const { userId: clerkId} = auth();
-    const userInfo = await getUserInfo({userId: params.id})
+    // const {user, totalEquipment} = await getUserInfo({userId: params.id});
+    let user, totalEquipment;
+    try {
+    ({ user, totalEquipment } = await getUserInfo({userId: params.id}));
+    } catch (error) {
+    return <div className='paragraph-regular text-dark200_light800'>
+        User not found | You can find the user in the community page
+    </div>;
+    }
+
+    
   return (
     <>
         <div className='flex flex-col-reverse items-start justify-between sm:flex-row'>
             <div className='flex flex-col items-start gap-4 lg:flex-row'>
                 <Image
-                   src={userInfo?.user.picture}
-                   alt={userInfo?.user.name}
+                   src={user.picture}
+                   alt={user.name}
                    width={140}
                    height={140}
                    className='rounded-full object-cover'
                 />
                 <div className='mt-3'>
-                    <h2 className='h2-bold text-dark100_light900'>{userInfo.user.name}</h2>
-                    <p className='paragraph-regular text-dark200_light800'>{userInfo.user.username}</p>
-                    <p className='paragraph-regular text-dark200_light800'>{userInfo.user.email}</p>
+                    <h2 className='h2-bold text-dark100_light900'>{user.name}</h2>
+                    <p className='paragraph-regular text-dark200_light800'>{user.username}</p>
+                    <p className='paragraph-regular text-dark200_light800'>{user.email}</p>
                         
                     <div className='mt-5 flex flex-wrap items-center justify-start gap-5 text-dark200_light800'>
-                        Joined on {getJoinedDate({ date: userInfo.user.joinedAt })}
+                        Joined on {getJoinedDate({ date: user.joinedAt })}
                     </div>
-                    {userInfo.user.bio && (
+                    
+                    {user.bio && (
                         <p className='paragraph-regular text-dark200_light800 mt-3'>
-                            {userInfo.user.bio}
+                            {user.bio}
                         </p>
                     )}
+                    <p className='paragraph-regular text-dark200_light800'>Total Equipment: {totalEquipment}</p>
                 </div>
             </div>
             <div className='flex justify-end max-sm:mb-5 max-sm:w-full sm:mt-3'>
                 <SignedIn>
                     {
-                        clerkId === userInfo.user.clerkId && (
+                        clerkId === user.clerkId && (
                            <Link href='/profile/edit' className='btn btn-primary'>
                                <Button className='paragraph-medium btn-secondary text-dark300_light900 min-h-[46px] min-w-[175px] px-4 py-3'>
                                 Edit Profile
@@ -57,8 +69,8 @@ const Page = async ({params, searchParams}: URLProps) => {
             <div className='w-full'>
                 <EquipmentTab 
                 searchParams={searchParams} 
-                userId={userInfo?.user._id} 
-                clerkId={userInfo?.user.clerkId}
+                userId={user._id} 
+                clerkId={user.clerkId}
                 />
             </div>
         </div>

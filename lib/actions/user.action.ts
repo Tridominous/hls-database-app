@@ -11,12 +11,20 @@ import Tag from "@/database/tag.model";
 export const getUserById = async (params: GetUserByIdParams) => {
     try {
       await  connectToDatabase();
-      const {userId} = params;
-      const user = await User.findOne({ clerkId: userId});
+      const { userId } = params;
+        console.log("Searching for user with clerkId:", userId);
+
+        const user = await User.findOne({ clerkId: userId });
+
+        if (!user) {
+            console.log("No user found with clerkId:", userId);
+            throw new Error("User not found");
+        }
+        console.log("User found:", user);
       return user;
 
     } catch (error) {
-        console.log(error)
+        console.log("User not found by Id", error)
         throw error;
     }
 }
@@ -243,6 +251,7 @@ export const getUserInfo = async (params:  GetUserByIdParams) => {
     const user = await User.findOne({clerkId: userId})
 
     if(!user){
+      // return {user: null, totalEquipment: 0}
       throw new Error('User not found')
     }
 
@@ -252,6 +261,7 @@ export const getUserInfo = async (params:  GetUserByIdParams) => {
       user,
       totalEquipment
     }
+     
   } catch (error) {
     console.log("Error fetching user info", error);
     throw error;

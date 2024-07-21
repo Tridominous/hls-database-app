@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Input } from "@/components/ui/input"
 import Image from 'next/image'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -13,10 +13,28 @@ const GlobalSearch = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
+  const searchContainerRef = useRef(null);
+
   const query = searchParams.get('q');
 
   const [search, setSearch] = useState(query ||"" );
   const [isopen, setIsopen] = useState(false);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: any) => {
+      if (searchContainerRef.current && 
+        // @ts-ignore
+        !searchContainerRef.current.contains(event.target)) {
+        setIsopen(false);
+        setSearch('')
+        }
+    }
+
+    setIsopen(false)
+    document.addEventListener('click', handleOutsideClick);
+    
+    return () => document.removeEventListener('click', handleOutsideClick);
+  }, [])
 
   useEffect(() => {
         const delayDebouncedFn = setTimeout(() => {

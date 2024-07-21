@@ -11,7 +11,7 @@ const Page = async ({ params }: ParamsProps) => {
   if (!userId) return null;
 
   const mongoUser = await getUserById({ userId });
-  const equipmentDetails = await getEquipmentById({ equipmentId: params.id });
+  const equipmentDetails = await getEquipmentById(params.id);
 
   if (!mongoUser || !equipmentDetails) {
     return (

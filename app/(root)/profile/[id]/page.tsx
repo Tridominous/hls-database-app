@@ -5,10 +5,16 @@ import { getJoinedDate } from '@/lib/utils';
 import { URLProps } from '@/types';
 import { SignedIn } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
+import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
 
+
+export const metadata: Metadata = {
+    title: "Profile | HLS User",
+  }
+  
 const Page = async ({params, searchParams}: URLProps) => {
     const { userId: clerkId} = auth();
     // const {user, totalEquipment} = await getUserInfo({userId: params.id});

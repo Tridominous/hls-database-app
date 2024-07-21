@@ -13,6 +13,7 @@ import mongoose, { FilterQuery} from "mongoose";
 export interface EquipmentResult {
   equipmentCards: EquipmentCardProps[];
   isNext: boolean;
+  totalEquipment?: number;
 }
 
 export async function getEquipment(params: GetEquipmentParams): Promise<EquipmentResult>  {
@@ -97,6 +98,7 @@ export async function getEquipment(params: GetEquipmentParams): Promise<Equipmen
         return {
           equipmentCards: JSON.parse(JSON.stringify(transformedEquipment)) as EquipmentCardProps[],
           isNext,
+          totalEquipment
         }
 
     } catch (error) {

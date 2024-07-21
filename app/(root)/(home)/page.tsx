@@ -10,12 +10,17 @@ import { Button } from "@/components/ui/button";
 import { HomePageFilters } from "@/constants/filters";
 import { getEquipment } from "@/lib/actions/equipment.action";
 import { SearchParamsProps } from "@/types";
+import { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Home | HLS Equipment",
+}
 
   
  
 export default  async function Home({searchParams}: SearchParamsProps) {
-  const { equipmentCards, isNext } = await getEquipment({
+  const { equipmentCards, isNext, totalEquipment } = await getEquipment({
     searchQuery: searchParams.q,
     filter: searchParams.filter,
     page: searchParams.page ? +searchParams.page : 1,
@@ -27,6 +32,7 @@ export default  async function Home({searchParams}: SearchParamsProps) {
     <>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:items-center">
         <h1 className="h1-bold text-dark100_light900">All Equipment</h1>
+          
 
         <Link href="/add-equipment" className="flex justify-end max-sm:w-full">
           <Button className="primary-gradient min-h-[46px] px-4 py-3 !text-light-900">
@@ -34,6 +40,7 @@ export default  async function Home({searchParams}: SearchParamsProps) {
           </Button>
         </Link>
       </div>
+      <h3 className=" text-dark100_light900">Total Equipment in the Database: {totalEquipment}</h3>
 
       <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
         <LocalSearchbar

@@ -9,7 +9,11 @@ import { EquipmentFilters } from "@/constants/filters";
 import { getSavedEquipment } from "@/lib/actions/user.action";
 import { SearchParamsProps } from "@/types";
 import { auth } from "@clerk/nextjs/server";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Collection | HLS Collection",
+}
 
 
  

@@ -28,11 +28,11 @@ const Page = async ({params, searchParams}: URLProps) => {
                     <p className='paragraph-regular text-dark200_light800'>{userInfo.user.username}</p>
                     <p className='paragraph-regular text-dark200_light800'>{userInfo.user.email}</p>
                         
-                    <div className='mt-5 flex flex-wrap items-center justify-start gap-5'>
+                    <div className='mt-5 flex flex-wrap items-center justify-start gap-5 text-dark200_light800'>
                         Joined on {getJoinedDate({ date: userInfo.user.joinedAt })}
                     </div>
                     {userInfo.user.bio && (
-                        <p className='paragraph-regular text-dark200_light800 mt-8'>
+                        <p className='paragraph-regular text-dark200_light800 mt-3'>
                             {userInfo.user.bio}
                         </p>
                     )}

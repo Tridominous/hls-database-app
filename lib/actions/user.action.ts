@@ -77,9 +77,9 @@ export const deleteUser = async (params: DeleteUserParams) => {
 export const getAllUsers = async (params: GetAllUsersParams) => {
   try {
     await  connectToDatabase();
-    // const { page = 1, pageSize = 20, filter, searchQuery } = params;
-
-    const { searchQuery, filter } = params;
+   
+    const { searchQuery, filter, page=1, pageSize = 9 } = params;
+    const skipAmount = (page - 1) * pageSize;
 
     const query: FilterQuery<typeof User> = {};
     if (searchQuery) {
@@ -100,12 +100,35 @@ export const getAllUsers = async (params: GetAllUsersParams) => {
         break;
     
       default:
+        sortOptions = { joinedAt: -1 }
         break;
     }
     const users = await User.find(query)
     .sort(sortOptions)
+    .skip(skipAmount)
+    .limit(pageSize)
 
-      return {users};
+    const totalUsers = await User.countDocuments(query);
+    const isNext = totalUsers > skipAmount + users.length;
+
+    const serializedUsers = users.map(user => {
+      const plainUser = user.toObject(); // Convert to a plain JavaScript object
+      return {
+        _id: plainUser._id.toString(), // Convert ObjectId to string
+        clerkId: plainUser.clerkId.toString(),
+        name: plainUser.name,
+        username: plainUser.username,
+        email: plainUser.email,
+        bio: plainUser.bio,
+        picture: plainUser.picture,
+        joinedAt: plainUser.joinedAt.toISOString(), // Convert Date to string
+      
+      };
+    });
+
+    return { users: serializedUsers, isNext };
+   
+
 
   } catch (error) {
     console.log("Error in getAllUsers", error)
@@ -154,7 +177,7 @@ export const getSavedEquipment = async (params: GetSavedEquipmentParams) => {
   try {
     await connectToDatabase();
 
-    const { clerkId, searchQuery, filter, page = 1, pageSize = 20 } = params;
+    const { clerkId, searchQuery, filter, page = 1, pageSize = 10 } = params;
 
     const skipAmount = (page - 1) * pageSize;
     
@@ -241,15 +264,19 @@ export const getUserEquipment = async (params: GetUserStatsParams) => {
     await connectToDatabase();
 
     const {userId, page= 1, pageSize = 10} = params;
+    const skipAmount = (page -1) * pageSize
 
     const totalEquipment = await EquipmentCard.countDocuments({author: userId});
 
     const userEquipment = await EquipmentCard.find({author: userId})
     .sort({views: -1})
+    .skip(skipAmount)
+    .limit(pageSize)
     .populate('tag', '_id name')
     .populate('author', '_id clerkId name picture')
 
-    return { totalEquipment, userEquipment}
+    const isNext = totalEquipment > skipAmount + userEquipment.length;
+    return { totalEquipment, userEquipment, isNext}
   } catch (error) {
     console.log("Error fetching user equipment", error);
     throw error;

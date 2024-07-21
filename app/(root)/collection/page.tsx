@@ -3,6 +3,7 @@
 import EquipmentCard, { EquipmentCardProps } from "@/components/cards/EquipmentCard";
 import Filter from "@/components/shared/Filter";
 import NoResult from "@/components/shared/NoResult";
+import Pagination from "@/components/shared/Pagination";
 import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
 import { EquipmentFilters } from "@/constants/filters";
 import { getSavedEquipment } from "@/lib/actions/user.action";
@@ -18,14 +19,15 @@ export default  async function collection({searchParams}: SearchParamsProps) {
 
   if(!userId) return null;
 
-  const result = await getSavedEquipment({
+  const {equipment, isNext} = await getSavedEquipment({
     clerkId: userId,
     searchQuery: searchParams.q,
     filter: searchParams.filter,
+    page: searchParams.page ? +searchParams.page:  1
   });
 
 
-  console.log(result)
+  console.log(equipment)
   return (
     <>
       <h1 className="h1-bold text-dark100_light900">Saved Equipment</h1>
@@ -49,8 +51,8 @@ export default  async function collection({searchParams}: SearchParamsProps) {
 
       <div className="mt-10 flex w-full flex-col gap-6">
         {/* loop through equipment */}
-        {result.equipment.length > 0 ? 
-          result.equipment.map((equipment: any) => (
+        {equipment.length > 0 ? 
+          equipment.map((equipment: any) => (
             <EquipmentCard
                 key={equipment._id?.toString()}
                 _id={equipment._id?.toString() ?? ''}
@@ -80,6 +82,13 @@ export default  async function collection({searchParams}: SearchParamsProps) {
           link="/"
           linkTitle="Save an Equipment"
         />}
+      </div>
+
+      <div className="mt-10">
+        <Pagination
+          pageNumber={searchParams?.page ? +searchParams.page : 1}
+          isNext={isNext}
+        />
       </div>
     </>
   )

@@ -4,6 +4,7 @@ import EquipmentCard, { EquipmentCardProps } from "@/components/cards/EquipmentC
 import HomeFilters from "@/components/home/HomeFilters";
 import Filter from "@/components/shared/Filter";
 import NoResult from "@/components/shared/NoResult";
+import Pagination from "@/components/shared/Pagination";
 import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
 import { Button } from "@/components/ui/button";
 import { HomePageFilters } from "@/constants/filters";
@@ -14,13 +15,14 @@ import Link from "next/link";
   
  
 export default  async function Home({searchParams}: SearchParamsProps) {
-  const equipment = await getEquipment({
+  const { equipmentCards, isNext } = await getEquipment({
     searchQuery: searchParams.q,
-    filter: searchParams.filter
+    filter: searchParams.filter,
+    page: searchParams.page ? +searchParams.page : 1,
   });
 
 
-  console.log(equipment)
+  console.log(equipmentCards)
   return (
     <>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:items-center">
@@ -53,7 +55,7 @@ export default  async function Home({searchParams}: SearchParamsProps) {
 
       <div className="mt-10 flex w-full flex-col gap-6">
         {/* loop through equipment */}
-        {equipment.length > 0 ? equipment.map((equipment) => (
+        {equipmentCards.length > 0 ? equipmentCards.map((equipment) => (
          <EquipmentCard
             key={equipment._id?.toString()}
             _id={equipment._id?.toString() ?? ''}
@@ -82,6 +84,13 @@ export default  async function Home({searchParams}: SearchParamsProps) {
           link="/add-equipment"
           linkTitle="Add an Equipment"
         />}
+      </div>
+      
+      <div className="mt-10">
+        <Pagination
+          pageNumber={searchParams?.page ? +searchParams.page : 1}
+          isNext={isNext}
+        />
       </div>
     </>
   )

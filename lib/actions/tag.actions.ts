@@ -31,7 +31,8 @@ export const getAllTags = async (params: GetAllTagsParams) => {
     try {
         await connectToDatabase();
 
-        const { searchQuery, filter } = params;
+        const { searchQuery, filter, page = 1, pageSize = 10 } = params;
+        const skipAmount = (page - 1) * pageSize;
 
         const query: FilterQuery<typeof Tag> = {}
         if (searchQuery) {
@@ -60,9 +61,16 @@ export const getAllTags = async (params: GetAllTagsParams) => {
             break;
         }
 
-        const tags = await Tag.find(query).sort(sortOptions);
+        const tags = await Tag.find(query)
+        .sort(sortOptions)
+        .skip(skipAmount)
+        .limit(pageSize)
 
-        return {tags}
+        const totalTags = await Tag.countDocuments(query);
+
+        const isNext = totalTags > skipAmount + tags.length
+
+        return {tags, isNext}
 
     } catch (error) {
         console.log('Error getting tags', error)
@@ -76,7 +84,7 @@ export const getEquipmentByTagId = async (params: GetEquipmentByTagIdParams) => 
         await connectToDatabase();
 
         const {tagId, page = 1, pageSize = 10, searchQuery} = params
-        
+        const skipAmount = (page - 1) * pageSize;
 
         const tagFilter: FilterQuery<ITag> = { _id: tagId};
 
@@ -88,6 +96,8 @@ export const getEquipmentByTagId = async (params: GetEquipmentByTagIdParams) => 
             : {},
         options: {
             sort: { createdAt: -1 },
+            skip: skipAmount,
+            limit: pageSize  + 1
         },
         populate: [
             { path: 'tag', model: Tag, select: "_id name" },
@@ -99,10 +109,11 @@ export const getEquipmentByTagId = async (params: GetEquipmentByTagIdParams) => 
         throw new Error('Tag not found');
         }
 
-        
+        const isNext = tag.Equipment.length > pageSize;
+
         const equipment = tag.Equipment;
 
-        return { tagTitle: tag.name, equipment};
+        return { tagTitle: tag.name, equipment, isNext};
 
     } catch (error) {
         console.log('Error getting tags', error)

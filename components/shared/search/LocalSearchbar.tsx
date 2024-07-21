@@ -10,7 +10,7 @@ interface CustomInputProps  {
     iconPosition: string;
     imgSrc: string;
     placeholder: string;
-    otherClasses?: string
+    otherClasses?: string;
 }
 
 const LocalSearchbar = ({
@@ -54,7 +54,7 @@ const LocalSearchbar = ({
 
   return (
     <div>
-        <div className={`background-light800_darkgradient relative flex min-h-[56px] grow items-center gap-4 rounded-[10px] px-4 ${otherClasses}`}>
+        <div className={`background-light800_darkgradient relative flex min-h-[56px] grow items-center gap-4 rounded-[10px] px-4 text-dark100_light900 ${otherClasses}`}>
             {iconPosition === 'left' && (
             <Image
                 src={imgSrc}

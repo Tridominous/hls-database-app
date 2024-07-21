@@ -1,7 +1,9 @@
+"use client"
+
 import { getTopTags } from '@/lib/actions/tag.actions';
 import Image from 'next/image';
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Badge } from '../ui/badge';
 import RenderTag from '../shared/RenderTag';
 
@@ -13,12 +15,25 @@ interface Props {
         username: string;
         email: string;
         picture?: string;
+        bio?: string;
+        joinedAt: Date | string
     }
 
 }
 
-const UserCard = async ({user}: Props) => {
-    const tags = await getTopTags({userId: user._id})
+const UserCard = ({user}: Props) => {
+    // Modified to fix hydration errors on the community page => made it a client component
+    const [tags, setTags] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchTags = async () => {
+            const fetchedTags = await getTopTags({ userId: user._id });
+            setTags(fetchedTags);
+        };
+
+        fetchTags();
+    }, [user._id]);
+
   return (
     <Link href={`profile/${user.clerkId}`}
     className='shadow-light100_darknone w-full max-xs:min-w-full xs:w-[260px]'

@@ -1,15 +1,16 @@
 import EquipmentCard from '@/components/cards/EquipmentCard'
 import NoResult from '@/components/shared/NoResult'
+import Pagination from '@/components/shared/Pagination'
 import LocalSearchbar from '@/components/shared/search/LocalSearchbar'
 import { getEquipmentByTagId } from '@/lib/actions/tag.actions'
 import { URLProps } from '@/types'
 import React from 'react'
 
 const Page = async ({params, searchParams}: URLProps) => {
-  const result = await getEquipmentByTagId({
+  const {equipment, isNext} = await getEquipmentByTagId({
     tagId: params.id,
-    page: 1,
-    searchQuery: searchParams.q
+    searchQuery: searchParams.q,
+    page: searchParams.page ? +searchParams.page: 1
   })
 
 
@@ -31,8 +32,8 @@ const Page = async ({params, searchParams}: URLProps) => {
 
       <div className="mt-10 flex w-full flex-col gap-6">
         {/* loop through equipment */}
-        {result.equipment?.length > 0 ? 
-          result.equipment.map((equipment: any) => (
+        {equipment?.length > 0 ? 
+          equipment.map((equipment: any) => (
             <EquipmentCard
                 key={equipment._id?.toString()}
                 _id={equipment._id?.toString() ?? ''}
@@ -48,7 +49,7 @@ const Page = async ({params, searchParams}: URLProps) => {
                 team={equipment.team}
                 serviceDate={equipment.serviceDate ? new Date(equipment.serviceDate) : undefined}
                 comment={equipment.comment}
-                tag={equipment.tag && (typeof equipment.tag === 'string' ? equipment.tag : equipment.tag.name)}
+                tag={equipment.tag }
                 author={equipment.author}
                 
                 views={equipment.views}
@@ -62,6 +63,13 @@ const Page = async ({params, searchParams}: URLProps) => {
           link="/add-equipment"
           linkTitle="Add an Equipment"
         />}
+      </div>
+
+      <div className="mt-10">
+        <Pagination
+          pageNumber={searchParams?.page ? +searchParams.page : 1}
+          isNext={isNext}
+        />
       </div>
     </>
   )

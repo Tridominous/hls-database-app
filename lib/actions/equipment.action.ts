@@ -8,14 +8,21 @@ import { GetEquipmentParams, CreateEquipmentParams, GetEquipmentByIdParams, Dele
 import { EquipmentCardProps } from "@/components/cards/EquipmentCard";
 import Interaction from "@/database/interaction.model";
 import { revalidatePath } from "next/cache";
-import { FilterQuery, Types } from "mongoose";
+import { FilterQuery} from "mongoose";
 
+export interface EquipmentResult {
+  equipmentCards: EquipmentCardProps[];
+  isNext: boolean;
+}
 
-export async function getEquipment(params: GetEquipmentParams): Promise<EquipmentCardProps[]>  {
+export async function getEquipment(params: GetEquipmentParams): Promise<EquipmentResult>  {
     try {
         await connectToDatabase();
 
-        const { searchQuery, filter } = params;
+        const { searchQuery, filter, page=1, pageSize= 10 } = params;
+
+        // Calculate the number of posts to skip based on the page number and page size
+        const skipAmount = (page - 1) * pageSize;
 
         let query: FilterQuery<typeof EquipmentCard> = {}
         if (searchQuery) {
@@ -52,7 +59,10 @@ export async function getEquipment(params: GetEquipmentParams): Promise<Equipmen
                 query.tag = tag._id ;
             } else {
                 // If tag doesn't exist, return empty array
-                return [];
+                return {
+                  equipmentCards: [],
+                  isNext: false
+                }
             }
         }
 
@@ -60,19 +70,34 @@ export async function getEquipment(params: GetEquipmentParams): Promise<Equipmen
         .populate({path: "tag", model: Tag})
         .populate({path: 'author', model: User})
         .lean<EquipmentCardProps[]>()
+        .skip(skipAmount)
+        .limit(pageSize)
         .sort(sortOptions)
+
+        const totalEquipment = await EquipmentCard.countDocuments(query);
+
+        const isNext = totalEquipment > skipAmount + equipment.length;
         
         // Transform the data to ensure tag is an object with a name property
         const transformedEquipment = equipment.map(item => ({
           ...item,
           _id: item._id.toString(),
-          tag: {
+          tag: item.tag ? {
             _id: item.tag._id.toString(),
             name: item.tag.name
-          }
+          } : null,
+          author: item.author ? {
+            _id: item.author._id.toString(),
+            name: item.author.name,
+            picture: item.author.picture
+          } : null,
+          createdAt: item.createdAt.toISOString(),
         }));
         
-        return JSON.parse(JSON.stringify(transformedEquipment)) as EquipmentCardProps[];
+        return {
+          equipmentCards: JSON.parse(JSON.stringify(transformedEquipment)) as EquipmentCardProps[],
+          isNext,
+        }
 
     } catch (error) {
         console.log(error)
@@ -148,6 +173,7 @@ export async function createEquipment (params: CreateEquipmentParams) {
         throw error;
     }
 }
+
 
 export const getEquipmentById = async (params: GetEquipmentByIdParams) => {
     try {

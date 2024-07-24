@@ -4,10 +4,14 @@ import RenderTag from '../shared/RenderTag';
 import Metric from '../shared/Metric';
 import { formatNumber, getTimestamp } from '@/lib/utils';
 import Image from 'next/image';
+import { SignedIn } from '@clerk/nextjs';
+import EditDeleteAction from '../shared/EditDeleteAction';
+import mongoose from 'mongoose';
 
 // Define the EquipmentProps interface
 export interface EquipmentCardProps { //different properties like purchasedate, price can be added 
-    _id: string;
+    _id: mongoose.Types.ObjectId | string;
+    clerkId?: string | null;
     imgUrl: string;
     title: string;
     brandname?: string;
@@ -15,29 +19,32 @@ export interface EquipmentCardProps { //different properties like purchasedate, 
     serialNumber?: string;
     assetTag?: string;
     subunits?: {
-        _id: string;
-        title: string;
-        brandname: string;
-        modelname: string;
-        serialNumber: string;
-        assetTag: string;
-        serviceDate?: Date;
+      _id: mongoose.Types.ObjectId | string;
+      title: string;
+      brandname: string;
+      modelname: string;
+      serialNumber: string;
+      assetTag: string;
+      serviceDate?: Date;
     }[];
     labNumber: string;
     labName?: string;
     team: string;
     serviceDate?: Date;
     comment?: string;
-    tag: { _id: string; name: string } | string;
-    author: {
-        _id: string;
+    tag: {
+        _id: mongoose.Types.ObjectId | string;
+        name: string;
+      };
+      author: {
+        clerkId: string;
+        _id: mongoose.Types.ObjectId | string;
         name: string;
         picture: string;
-    };
-    views: number;
-
-    createdAt: Date;
-}
+      };
+      views: number;
+      createdAt: Date;
+    }
 
 const getTagName = (tag: { _id: string; name: string } | string): string => {
     return typeof tag === 'object' && tag !== null ? tag.name : tag;
@@ -47,6 +54,7 @@ const getTagName = (tag: { _id: string; name: string } | string): string => {
 // Define the EquipmentCard component
 const EquipmentCard = ({
     _id,
+    clerkId,
     imgUrl,
     title,
     brandname,
@@ -64,6 +72,7 @@ const EquipmentCard = ({
     views,
     createdAt,
 }: EquipmentCardProps) => {
+    const showActionButtons = clerkId && clerkId === author.clerkId
   return (
     <div className='card-wrapper rounded-[10px] p-9 sm:px-11 border-separate shadow-lg items-center'>
         <div className='flex flex-col-reverse items-start justify-between gap-5 sm:flex-row'>
@@ -72,11 +81,11 @@ const EquipmentCard = ({
             </span>
             <Link href={`/equipment/${_id}`}>
                 <Image
-                    src={imgUrl}
+                    src={imgUrl || '/assets/images/default_equipment.png'}
                     alt={`${title} photo missing`}
                     width={150}
                     height={150}
-                    className='my-5 ml-0 rounded-[10px] body-medium text-dark400_light800 mx-10 w-full'
+                    className='my-5 ml-0 rounded-[10px] body-medium text-dark400_light800 mx-10 w-fit'
                 />
                 <h3 className='sm:h3-semibold base-semibold text-dark200_light900 line-clamp-1 flex-1'>
                    {title}
@@ -108,19 +117,28 @@ const EquipmentCard = ({
                 { serviceDate && <h5 className='body-medium text-dark400_light800'>Service Date: {serviceDate instanceof Date ? serviceDate.toDateString() : 'Invalid Date'}</h5>}
                 { comment && <h5 className='body-medium text-dark400_light800 line-clamp-1 flex-1'>Comment: {comment}</h5> }
             </Link>
+
             {/* if signed in add edit delete actions */}
+            <SignedIn>
+                {
+                    showActionButtons && (
+                        <EditDeleteAction type="Equipment" itemId={JSON.stringify(_id)} />
+                    )
+                }
+            </SignedIn>
+
         </div>
 
         <div className='mt-3.5 flex flex-wrap gap-2'>
            
-        <RenderTag name={getTagName(tag)}/>
+        <RenderTag name={getTagName(tag.name)}/>
           
         </div>
 
             <div className='flex-between mt-6 w-full flex-wrap gap-3'>
             {author && author.name && (
                 <Metric
-                    imgUrl="/assets/icons/avatar.svg"
+                    imgUrl={author?.picture || '/assets/images/default_user.png'}
                     alt="user"
                     value={author.name}
                     title={` - added ${getTimestamp(createdAt)}`}

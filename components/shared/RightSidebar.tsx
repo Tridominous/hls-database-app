@@ -1,26 +1,16 @@
-"use client";
+
 
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
 import RenderTag from './RenderTag';
+import { getTopEquipment } from '@/lib/actions/equipment.action';
+import { getTopEquipmentTags } from '@/lib/actions/tag.actions';
 
-const hotEquipment = [
-    {_id: "1", title: "HPLC"},
-    {_id: "2", title: "Spectrophotometer"},
-    {_id: "3", title: "Microscope"},
-    {_id: "4", title: "Hotplate"},
-    {_id: "5", title: "NMR"},
-];
 
-const popularTags = [
-    {_id: "1", name: 'HPLC', totalEquipment: 5},
-    {_id: "2", name: 'Microscope', totalEquipment: 12},
-    {_id: "3", name: 'Spectrometer', totalEquipment: 20},
-    {_id: "4", name: 'Cylinder', totalEquipment: 21},
-    {_id: "5", name: 'Pipette', totalEquipment: 7},
-];
-const RightSidebar = () => {
+const RightSidebar = async () => {
+    const topEquipment = await getTopEquipment();
+    const topTags = await getTopEquipmentTags();
 
   return (
     <section className='background-light900_dark200 light-border sticky right-0 top-0 flex h-screen w-[350px] flex-col overflow-y-auto border-l p-6 pt-36 shadow-light-300 max-xl:hidden dark:shadow-none'>
@@ -29,9 +19,9 @@ const RightSidebar = () => {
                 Top Equipment
             </h3>
             <div className='mt-7 flex w-full flex-col gap-[30px]'>
-                {hotEquipment.map((equipment) => (
+                {topEquipment.map((equipment) => (
                     <Link
-                        href={`/questions/${equipment._id}`}
+                        href={`/equipment/${equipment._id}`}
                         key={equipment._id}
                         className='flex cursor-pointer items-center justify-between gap-7'
                     >
@@ -50,15 +40,14 @@ const RightSidebar = () => {
 
         <div className='mt-16'>
             <h3 className='h3-bold text-dark200_light900'>
-                Popular Tags
+                Top Equipment Tags
             </h3>
             <div className='mt-7 flex flex-col gap-4'>
-                {popularTags.map((tag) => (
+                {topTags.map((tag) => (
                     <RenderTag
                         key={tag._id}
-                        _id={tag._id}
                         name={tag.name}
-                        totalEquipment={tag.totalEquipment}
+                        totalEquipment={tag.numberOfEquipment}
                         showCount
                     />
 

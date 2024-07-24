@@ -30,3 +30,11 @@ export const EquipmentSchema = z.object({
     imgUrl: z.union([z.string(), FileSchema]),
     
   })
+
+
+  export const ProfileSchema = z.object({
+    name: z.string().min(4).max(50),
+    username: z.string().min(4).max(50),
+    email: z.string().email().min(5).max(50),
+    bio:  z.string().min(2).max(50).optional(),
+  })

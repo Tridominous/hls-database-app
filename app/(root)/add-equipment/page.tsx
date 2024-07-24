@@ -3,6 +3,11 @@ import { getUserById } from '@/lib/actions/user.action';
 import { auth } from '@clerk/nextjs/server';
 import React from 'react'
 import { redirect } from 'next/navigation';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Add Equipment",
+}
 
 const Page = async () => {
   const { userId} = auth();
@@ -16,7 +21,7 @@ const Page = async () => {
       <h1 className='h1-bold text-dark100_light900'>Add an Equipment</h1>
 
       <div className='mt-9'>
-        <Equipment mongoUserId={JSON.stringify(mongoUser._id)}/>
+        <Equipment mongoUserId={JSON.stringify(mongoUser?._id)}/>
       </div>
     </div>
   )

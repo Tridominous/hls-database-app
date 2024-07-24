@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import qs from "query-string";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -60,4 +61,51 @@ if(num >= 1000000) {
   return num.toString();
 }
 
+}
+
+
+interface DateObject {
+  date: string | Date;
+}
+
+export function getJoinedDate(obj: DateObject): string {
+  const date = new Date(obj.date);
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long' };
+  return date.toLocaleDateString('en-US', options);
+}
+
+interface UrlQueryParams {
+  params: string;
+  key: string;
+  value: string | null;
+}
+
+export const formUrlQuery = ({params, key, value}: UrlQueryParams) => {
+  const currentUrl = qs.parse(params);
+  currentUrl[key] = value;
+
+  return qs.stringifyUrl({
+    url: window.location.pathname,
+    query: currentUrl,
+  },
+{skipNull: true})
+}
+
+interface RemoveUrlQueryParams {
+  params: string;
+  keysToRemove: string[];
+}
+
+export const removeKeysFromQuery = ({params, keysToRemove}: RemoveUrlQueryParams) => {
+  const currentUrl = qs.parse(params);
+  
+  keysToRemove.forEach((key) => {
+    delete currentUrl[key];
+    });
+
+  return qs.stringifyUrl({
+    url: window.location.pathname,
+    query: currentUrl,
+  },
+{skipNull: true})
 }

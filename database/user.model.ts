@@ -22,8 +22,8 @@ export interface IUser extends Document {
 const UserSchema: Schema = new Schema({
     clerkId: { type: String, required: true },
     name: { type: String, required: true },
-    username: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true, },
+    email: { type: String, required: true, },
     password: { type: String },
     bio: { type: String },
     picture: { type: String},
@@ -32,6 +32,8 @@ const UserSchema: Schema = new Schema({
     saved: [{ type: Schema.Types.ObjectId, ref: 'EquipmentCard', max: 1000 }],
     joinedAt: { type: Date, default: Date.now }
 });
+
+
 
 // Create the EquipmentCard model
 const User = models.User || model('User', UserSchema);

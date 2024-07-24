@@ -1,4 +1,4 @@
-import { Schema, models, model, Document} from 'mongoose';
+import { Schema, models, model, Document, Types} from 'mongoose';
 
 
 
@@ -25,9 +25,9 @@ export interface IEquipmentCard extends Document {
     team: string;
     serviceDate?: Date;
     comment?: string;
-    tag: string;
+    tag: Schema.Types.ObjectId | string;
     imgUrl: string;
-  author: Schema.Types.ObjectId;
+  author: Schema.Types.ObjectId | string;
   views: number;
   createdAt: Date;
 }

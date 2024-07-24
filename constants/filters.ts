@@ -2,13 +2,11 @@
   export const UserFilters = [
     { name: "New Users", value: "new_users" },
     { name: "Old Users", value: "old_users" },
-    { name: "Top Contributors", value: "top_contributors" },
   ];
   
-  export const QuestionFilters = [
+  export const EquipmentFilters = [
     { name: "Most Recent", value: "most_recent" },
     { name: "Oldest", value: "oldest" },
-    { name: "Most Used", value: "most_used" },
     { name: "Most Viewed", value: "most_viewed" }, 
   ];
   
@@ -16,17 +14,17 @@
     { name: "Popular", value: "popular" },
     { name: "Recent", value: "recent" },
     { name: "Name", value: "name" },
-    { name: "Old", value: "old" },
+    { name: "Oldest", value: "oldest" },
   ];
   
   export const HomePageFilters = [
     { name: "Newest", value: "newest" },
-    { name: "Recommended", value: "recommended" },
+    { name: "Oldest", value: "oldest" },
     { name: "Frequent", value: "frequent" },
   ];
   
   export const GlobalSearchFilters = [
-    { name: "Question", value: "question" },
+    { name: "Equipment", value: "equipment" },
     { name: "User", value: "user" },
     { name: "Tag", value: "tag" },
   ];

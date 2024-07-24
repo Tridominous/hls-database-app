@@ -8,7 +8,7 @@ import { Badge } from '../ui/badge';
 import RenderTag from '../shared/RenderTag';
 
 interface Props {
-    user : {
+    user: {
         _id: string;
         clerkId: string;
         name: string;
@@ -18,67 +18,72 @@ interface Props {
         bio?: string;
         joinedAt: Date | string
     }
-
 }
 
-const UserCard = ({user}: Props) => {
-    // Modified to fix hydration errors on the community page => made it a client component
-    const [tags, setTags] = useState<any[]>([]);
+interface Tag {
+    _id: string;
+    name: string;
+}
+
+const UserCard = ({ user }: Props) => {
+    const [tags, setTags] = useState<Tag[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchTags = async () => {
-            const fetchedTags = await getTopTags({ userId: user._id });
-            setTags(fetchedTags);
+            setIsLoading(true);
+            try {
+                const fetchedTags = await getTopTags({ userId: user._id });
+                setTags(fetchedTags);
+            } catch (error) {
+                console.error('Error fetching tags:', error);
+            } finally {
+                setIsLoading(false);
+            }
         };
 
         fetchTags();
     }, [user._id]);
 
-  return (
-    <Link href={`profile/${user.clerkId}`}
-    className='shadow-light100_darknone w-full max-xs:min-w-full xs:w-[260px]'
-    >
-        <article className='background-light900_dark200 light-border flex w-full flex-col items-center justify-center rounded-2xl border p-8'>
-            <Image
-             src={user.picture || '/assets/images/default_user.png'}
-             alt={user.name}
-             width={100}
-             height={100}
-             className='rounded-full'
-            />
-            <div className='mt-4 text-center'>
-                <h3 className='h3-bold text-dark200_light900 line-clamp-1'>
-                    {user.name}
-                </h3>
-                <p className='body-regular text-dark500_light500 mt-2'>{user.email}</p>
-            </div>
+    return (
+        <Link href={`profile/${user.clerkId}`}
+            className='shadow-light100_darknone w-full max-xs:min-w-full xs:w-[260px]'
+        >
+            <article className='background-light900_dark200 light-border flex w-full flex-col items-center justify-center rounded-2xl border p-8'>
+                <Image
+                    src={user.picture || '/assets/images/default_user.png'}
+                    alt={user.name}
+                    width={100}
+                    height={100}
+                    className='rounded-full'
+                />
+                <div className='mt-4 text-center'>
+                    <h3 className='h3-bold text-dark200_light900 line-clamp-1'>
+                        {user.name}
+                    </h3>
+                    <p className='body-regular text-dark500_light500 mt-2'>{user.email}</p>
+                </div>
 
-            <div className='mt-5'>
-                {
-                    tags.length > 0 ? (
+                <div className='mt-5'>
+                    {isLoading ? (
+                        <Badge className='text-dark200_light900'>Loading tags...</Badge>
+                    ) : tags.length > 0 ? (
                         <div className='flex items-center gap-2'>
-                            {
-                                tags.map((tag) => (
-                                    <RenderTag
+                            {tags.map((tag) => (
+                                <RenderTag
                                     key={tag._id}
                                     _id={tag._id}
                                     name={tag.name}
-                                    />
-                                    ))    
-                            }
-
+                                />
+                            ))}
                         </div>
                     ) : (
-                        <Badge>
-                            No tags yet
-                        </Badge>
-                    )
-                }
-            </div>
-        </article>
-
-    </Link>
-  )
+                        <Badge className='text-dark200_light900'>No tags yet</Badge>
+                    )}
+                </div>
+            </article>
+        </Link>
+    )
 }
 
 export default UserCard

@@ -72,7 +72,7 @@ const Page = async ({params, searchParams}: URLProps) => {
         </div>
         <div className='mt-10 flex flex-col'>
             <h2 className='h2-bold text-dark100_light900 mb-5'>Equipment</h2>
-            <div className='w-full'>
+            <div className='mt-5 flex flex-col w-full gap-6'>
                 <EquipmentTab 
                 searchParams={searchParams} 
                 userId={user._id} 

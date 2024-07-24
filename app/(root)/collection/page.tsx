@@ -72,7 +72,7 @@ export default  async function collection({searchParams}: SearchParamsProps) {
                 team={equipment.team}
                 serviceDate={equipment.serviceDate ? new Date(equipment.serviceDate) : undefined}
                 comment={equipment.comment}
-                tag={equipment.tag && (typeof equipment.tag === 'string' ? equipment.tag : equipment.tag.name)}
+                tag={equipment.tag }
                 author={equipment.author}
                 
                 views={equipment.views}

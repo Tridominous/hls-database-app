@@ -238,254 +238,132 @@ export const deleteEquipment = async (params: DeleteEquipmentParams) => {
 }
 
 
-// export const editEquipment = async (params: EditEquipmentParams) => {
-//     try {
-//         await connectToDatabase();
-
-//         const {
-//             equipmentId,
-//             title,
-//             brandname,
-//             modelname,
-//             serialNumber,
-//             assetTag,
-//             subunits,
-//             labNumber,
-//             labName,
-//             team,
-//             serviceDate,
-//             comment,
-//             imgUrl,
-//             path
-//         } = params;
-
-//         const equipment = await EquipmentCard.findById(new Types.ObjectId(equipmentId));
-
-//         if (!equipment) {
-//             throw new Error('Equipment not found');
-//         }
-
-//         // Update the equipment fields
-//         equipment.title = title;
-//         equipment.brandname = brandname;
-//         equipment.modelname = modelname;
-//         equipment.serialNumber = serialNumber;
-//         equipment.assetTag = assetTag;
-//         equipment.subunits = subunits;
-//         equipment.labNumber = labNumber;
-//         equipment.labName = labName;
-//         equipment.team = team;
-//         equipment.serviceDate = serviceDate;
-//         equipment.comment = comment;
-//         equipment.imgUrl = imgUrl;
-
-
-//         const updatedEquipment = await equipment.save();
-        
-//         revalidatePath(path);
-//         return updatedEquipment.toObject();
-
-//     } catch (error) {
-//         console.error("Error editing the equipment", error);
-//         if (error instanceof Error) {
-//             console.error("Edit func Error message:", error.message);
-//             console.error("Edit func Error stack:", error.stack);
-//         }
-//         throw error;
-//     }
-// }
-
-
-
-
-// export async function editEquipment(params: EditEquipmentParams) {
-//     try {
-//         // Connect to DB
-//         await connectToDatabase();
-
-//         const {
-//             equipmentId,
-//             title,
-//             brandname,
-//             modelname,
-//             serialNumber,
-//             assetTag,
-//             subunits,
-//             labNumber,
-//             labName,
-//             team,
-//             serviceDate,
-//             comment,
-//             tag,
-//             imgUrl,
-//             path
-//         } = params;
-
-//         // Find the equipment
-//         const equipment = await EquipmentCard.findByIdAndUpdate(equipmentId, {
-//             title,
-//             brandname,
-//             modelname,
-//             serialNumber,
-//             assetTag,
-//             subunits,
-//             labNumber,
-//             labName,
-//             team,
-//             serviceDate,
-//             comment,
-//             tag,
-//             imgUrl,
-//         },
-//         {new: true}
-//     ).populate({
-//         path: 'tag',
-//         model: 'Tag',
-//     });
-
-//         if (!equipment) {
-//             throw new Error('Equipment not found');
-//         }
-
-//         const actualTag = equipment.tag.name;
-//         const removedTag = equipment.tag.name !== tag ? equipment.tag._id : null;
-
-//         const newTag = tag !== actualTag ? tag: null; // If the tag is the same, don't update it
-
-//         if(removedTag) {
-//             await EquipmentCard.findByIdAndUpdate(equipment._id, {
-//                 $unset: {tag: removedTag}
-//             });
-
-//             await Tag.findByIdAndUpdate(removedTag, {
-//                 $pull: {equipment: equipment._id}
-//             });
-//         }
-
-//         if(newTag) {
-//             let tagDocument = await Tag.findOneAndUpdate(
-//                 {name: { $regex: new RegExp(`^${newTag}`, 'i')}},
-//                 { $setOnInsert: { name: newTag}, $push: { equipment: equipment._id }},
-//                 { upsert: true, new: true }
-//             );
-
-//             await EquipmentCard.findByIdAndUpdate(equipment._id, {
-//                 $set: {tag: tagDocument._id},
-//             })
-//         }
-
-//         revalidatePath(path);
-
-//          // Save the updated equipment
-//         const updatedEquipment = await equipment.save();
-
-//         // Revalidate the path
-//         revalidatePath(path);
-
-//         // Convert to plain object and serialize
-//         const plainEquipment = updatedEquipment.toObject();
-//         const serializedEquipment = JSON.parse(JSON.stringify(plainEquipment));
-
-//         return serializedEquipment;
-      
-
-//     } catch (error) {
-//         console.error("Error editing the equipment", error);
-//         if (error instanceof Error) {
-//             console.error("Edit func Error message:", error.message);
-//             console.error("Edit func Error stack:", error.stack);
-//         }
-//         throw error;
-//     }
-// }
-
-
 
 export async function editEquipment(params: EditEquipmentParams) {
-    try {
-      // Connect to DB
-      await connectToDatabase();
-  
-      const {
-        equipmentId,
-        title,
-        brandname,
-        modelname,
-        serialNumber,
-        assetTag,
-        subunits,
-        labNumber,
-        labName,
-        team,
-        serviceDate,
-        comment,
-        tag,
-        imgUrl,
-        path
-      } = params;
-  
-      // Find and update the equipment
-      const equipment = await EquipmentCard.findByIdAndUpdate(equipmentId, {
-        title,
-        brandname,
-        modelname,
-        serialNumber,
-        assetTag,
-        subunits,
-        labNumber,
-        labName,
-        team,
-        serviceDate,
-        comment,
-        tag,
-        imgUrl,
-      }, { new: true }).populate('tag');
-  
-      if (!equipment) {
-        throw new Error('Equipment not found');
-      }
-  
-      const actualTag = equipment.tag?.name || null;
-      const removedTag = actualTag !== tag ? equipment.tag?._id : null;
-      const newTag = actualTag !== tag ? tag : null;
-  
-      if (removedTag) {
-        await EquipmentCard.findByIdAndUpdate(equipment._id, { $unset: { tag: "" } });
-        await Tag.findByIdAndUpdate(removedTag, { $pull: { equipment: equipment._id } });
-      }
-  
-      if (newTag) {
-        const tagDocument = await Tag.findOneAndUpdate(
-          { name: { $regex: new RegExp(`^${newTag}$`, 'i') } },
-          { $setOnInsert: { name: newTag }, $push: { equipment: equipment._id } },
-          { upsert: true, new: true }
-        );
-  
-        await EquipmentCard.findByIdAndUpdate(equipment._id, { $set: { tag: tagDocument._id } });
-      }
-  
-      // Save the updated equipment
-      const updatedEquipment = await equipment.save();
-  
-      // Revalidate the path
-      revalidatePath(path);
-  
-      // Convert to plain object and serialize
-      const plainEquipment = updatedEquipment.toObject();
-      const serializedEquipment = JSON.parse(JSON.stringify(plainEquipment));
-  
-      return serializedEquipment;
-  
-    } catch (error) {
-      console.error("Error editing the equipment", error);
-      if (error instanceof Error) {
-        console.error("Edit func Error message:", error.message);
-        console.error("Edit func Error stack:", error.stack);
-      }
-      throw error;
-    }
-  }
+  try {
+    // Connect to DB
+    await connectToDatabase();
+    console.log("Connected to database");
 
+    const {
+      equipmentId,
+      title,
+      brandname,
+      modelname,
+      serialNumber,
+      assetTag,
+      subunits,
+      labNumber,
+      labName,
+      team,
+      serviceDate,
+      comment,
+      tag,
+      imgUrl,
+      path
+    } = params;
+
+    console.log("Searching for equipment with ID:", equipmentId);
+
+    // Find and update the equipment
+    let equipment = await EquipmentCard.findByIdAndUpdate(equipmentId, {
+      title,
+      brandname,
+      modelname,
+      serialNumber,
+      assetTag,
+      subunits,
+      labNumber,
+      labName,
+      team,
+      serviceDate,
+      comment,
+      imgUrl,
+    }, { new: true, runValidators: true }).populate('tag');
+
+    if (!equipment) {
+      console.error("Equipment not found with ID:", equipmentId);
+      throw new Error('Equipment not found');
+    }
+
+    console.log("Equipment found and updated:", equipment);
+
+    const actualTag = equipment.tag?.name || null;
+    const removedTag = actualTag !== tag ? equipment.tag?._id : null;
+    const newTag = actualTag !== tag ? tag : null;
+
+    console.log("Tag update info:", { actualTag, removedTag, newTag });
+
+    if (removedTag) {
+      console.log("Removing old tag:", removedTag);
+      await EquipmentCard.findByIdAndUpdate(equipment._id, { $unset: { tag: "" } });
+      await Tag.findByIdAndUpdate(removedTag, { $pull: { equipment: equipment._id } });
+    }
+
+    if (newTag) {
+      console.log("Adding new tag:", newTag);
+      const tagDocument = await Tag.findOneAndUpdate(
+        { name: { $regex: new RegExp(`^${newTag}$`, 'i') } },
+        { $setOnInsert: { name: newTag }, $push: { equipment: equipment._id } },
+        { upsert: true, new: true }
+      );
+
+      await EquipmentCard.findByIdAndUpdate(equipment._id, { $set: { tag: tagDocument._id } });
+    }
+
+    // Fetch the updated equipment with populated tag
+    equipment = await EquipmentCard.findById(equipmentId).populate('tag');
+
+    console.log("Final updated equipment:", equipment);
+
+    // Revalidate the path
+    revalidatePath(path);
+
+    // Convert to plain object and serialize
+    const plainEquipment = equipment.toObject();
+    const serializedEquipment = JSON.parse(JSON.stringify(plainEquipment));
+
+    return serializedEquipment;
+
+  } catch (error) {
+    console.error("Error editing the equipment", error);
+    if (error instanceof Error) {
+      console.error("Edit func Error message:", error.message);
+      console.error("Edit func Error stack:", error.stack);
+    }
+    throw error;
+  }
+}
+
+// export async function editEquipment(params: EditEquipmentParams) {
+//   console.log("editEquipment called with params:", params);
+//   try {
+//     // Connect to DB
+//     await connectToDatabase();
+
+//     // Find and update the equipment
+//     const updatedEquipment = await EquipmentCard.findByIdAndUpdate(
+//       params.equipmentId,
+//       { ...params },
+//       { new: true }
+//     ).populate('tag');
+
+//     if (!updatedEquipment) {
+//       console.error("Equipment not found for update");
+//       throw new Error('Equipment not found');
+//     }
+
+//     console.log("Equipment updated:", updatedEquipment);
+
+//     // Revalidate the path
+//     revalidatePath(params.path);
+
+//     return updatedEquipment;
+//   } catch (error) {
+//     console.error("Error editing the equipment:", error);
+//     throw error;
+//   }
+// }
 
   export const getTopEquipment = async () => {
     try {
@@ -506,3 +384,4 @@ export async function editEquipment(params: EditEquipmentParams) {
       
     }
   }
+  

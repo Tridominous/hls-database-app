@@ -1,5 +1,5 @@
 "use client"
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { EquipmentSchema } from '@/lib/validations'
 import axios from 'axios'
 
@@ -32,7 +32,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { UploadButton } from '@/utils/uploadthing'
 import Image from 'next/image'
 import { createEquipment, editEquipment } from '@/lib/actions/equipment.action'
-import { EditEquipmentParams } from '@/lib/actions/shared.types'
+
 
 
 interface Props {
@@ -43,32 +43,77 @@ interface Props {
 }
 
 const Equipment = ({type, mongoUserId, equipmentDetails}: Props) => {
+  console.log("Starting Equipment component render");
+const [imagedata, setImagedata] = useState<string | undefined>("")
+const [imageIsdeleting, setImageIsdeleting] = useState(false);
+const [parsedDetails, setParsedDetails] = useState<any>({});
+const {toast} = useToast()
+const [isSubmitting, setIsSubmitting] = useState(false)
+const router = useRouter();
+const pathname = usePathname();
 
-  const parsedEquipmentDetails = equipmentDetails? JSON.parse(equipmentDetails || "") : {}
+const form = useForm<z.infer<typeof EquipmentSchema>>({
+  resolver: zodResolver(EquipmentSchema),
+  defaultValues: {
+    title: "",
+    brandname: "",
+    modelname: "",
+    serialNumber: "",
+    assetTag: "",
+    subunits: [],
+    labNumber: "",
+    labName: "",
+    team: "",
+    serviceDate: new Date('2024-06-13'),
+    tag: "",
+    comment: "",
+    imgUrl: "",
+  },
+});
 
-  console.log("Parsed Equipment details", parsedEquipmentDetails)
- console.log("Atfer parsed equipment")
+useEffect(() => {
+  console.log("Component mounted");
+  const parseDetails = () => {
+    try {
+      if (equipmentDetails) {
+        const parsed = JSON.parse(equipmentDetails);
+        console.log("Parsed Equipment details", parsed);
+        setParsedDetails(parsed);
+      }
+    } catch (error) {
+      console.error("Error parsing equipmentDetails:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to parse equipment details'
+      });
+    }
+  };
 
-    // 1. Define your form.
-  const form = useForm<z.infer<typeof EquipmentSchema>>({
-    resolver: zodResolver(EquipmentSchema),
-    defaultValues: {
-        title: parsedEquipmentDetails.title || "",
-        brandname: parsedEquipmentDetails.brandname || "",
-        modelname:parsedEquipmentDetails.modelname ||  "",
-        serialNumber:parsedEquipmentDetails.serialNumber ||  "",
-        assetTag:parsedEquipmentDetails.assetTag ||  "",
-        subunits:parsedEquipmentDetails.subunits || [],
-        labNumber:parsedEquipmentDetails.labNumber ||  "",
-        labName: parsedEquipmentDetails.labName ||  "",
-        team: parsedEquipmentDetails.team ||  "",
-        serviceDate: parsedEquipmentDetails.serviceDate ||  new Date('2024-06-13'),
-        tag:parsedEquipmentDetails?.tag?.name || "",
-        comment: parsedEquipmentDetails.comment ||  "",
-        imgUrl: "",
-    },
-  })
+  parseDetails();
+}, [equipmentDetails, toast]);
 
+useEffect(() => {
+  if (Object.keys(parsedDetails).length > 0) {
+    console.log("Updating form with parsed details");
+    form.reset({
+      title: parsedDetails.title || "",
+      brandname: parsedDetails.brandname || "",
+      modelname: parsedDetails.modelname || "",
+      serialNumber: parsedDetails.serialNumber || "",
+      assetTag: parsedDetails.assetTag || "",
+      subunits: parsedDetails.subunits || [],
+      labNumber: parsedDetails.labNumber || "",
+      labName: parsedDetails.labName || "",
+      team: parsedDetails.team || "",
+      serviceDate: parsedDetails.serviceDate ? new Date(parsedDetails.serviceDate) : new Date('2024-06-13'),
+      tag: parsedDetails?.tag?.name || "",
+      comment: parsedDetails.comment || "",
+      imgUrl: parsedDetails.imgUrl || "",
+    });
+  }
+}, [parsedDetails, form]);
+  console.log("Form initialized");
   console.log("2 Atfer parsed equipment")
   //Array of subunits
   const { fields, append, remove } = useFieldArray({
@@ -76,16 +121,11 @@ const Equipment = ({type, mongoUserId, equipmentDetails}: Props) => {
     name: "subunits",
   });
  
-
+  console.log("Field array initialized");
   console.log("3 Atfer parsed equipment")
 
-const [imagedata, setImagedata] = useState<string | undefined>("")
-const [imageIsdeleting, setImageIsdeleting] = useState(false)
-const {toast} = useToast()
-const [isSubmitting, setIsSubmitting] = useState(false)
-const router = useRouter();
-const pathname = usePathname();
 
+console.log("States and hooks initialized");
 
 
 const handleImageUpload = useCallback((uploadedUrl: string) => {
@@ -138,29 +178,29 @@ const handleImageDelete = (image: string) => {
       }
   
       if (type === 'Edit') {
-        const editParams: EditEquipmentParams = {
-          equipmentId: parsedEquipmentDetails._id,
-          title: values.title,
-          brandname: values.brandname,
-          modelname: values.modelname,
-          serialNumber: values.serialNumber,
-          assetTag: values.assetTag,
-          subunits: values.subunits || [],
-          labNumber: values.labNumber,
-          labName: values.labName,
-          team: values.team,
-          tag: values.tag,
-          serviceDate: values.serviceDate,
-          comment: values.comment,
-          imgUrl: values.imgUrl,
+         // Delete old image if it exists
+         if (parsedDetails.imgUrl && parsedDetails.imgUrl !== values.imgUrl) {
+          handleImageDelete(parsedDetails.imgUrl);
+          console.log("Deleted imgUrl from Uploadthing")
+        } else {
+          console.log("No imgUrl to delete | failed to delete imgUrl from Uploadthing")
+        }
+
+
+
+        const editParams = {
+          equipmentId: parsedDetails._id,
+          ...values,
           path: pathname
         };
-  
+      
+        console.log('Edit params:', editParams);
+      
         try {
           console.log('Trying to edit equipment');
           const updatedEquipment = await editEquipment(editParams);
-          console.log("Equipment updated:", updatedEquipment);
-  
+          console.log("Updated equipment:", updatedEquipment);
+      
           if (updatedEquipment) {
             console.log("Update successful, showing toast");
             toast({
@@ -168,23 +208,25 @@ const handleImageDelete = (image: string) => {
               title: 'Equipment updated successfully',
               description: 'Your equipment has been updated in the database.'
             });
-  
+      
             console.log("Redirecting to equipment page");
             router.push(`/equipment/${updatedEquipment._id}`);
-  
+            
             // Reset form
             console.log('About to reset form');
             form.reset();
             setImagedata(undefined);
+
+      
           } else {
-            console.log("Update failed");
-            throw new Error('Failed to update equipment');
+            console.log("Update failed: No updated equipment returned");
+            throw new Error('Failed to update equipment: No data returned');
           }
         } catch (error: any) {
-          console.log("Error editing equipment", error);
+          console.error("Error editing equipment", error);
           if (error instanceof Error) {
-            console.error("Error message:", error.message);
-            console.error("Error stack:", error.stack);
+            console.error("Edit func Error message:", error.message);
+            console.error("Edit func Error stack:", error.stack);
           }
           toast({
             variant: 'destructive',
@@ -258,6 +300,7 @@ const handleImageDelete = (image: string) => {
     }
   }
   
+  console.log("Render completed");
 
   return (
     <Form {...form}>

@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import EquipmentCard from "@/database/equipment.model";
 import { FilterQuery } from "mongoose";
 import Tag from "@/database/tag.model";
+import { v4 as uuidv4 } from 'uuid'; // To generate a unique Clerk ID
 
 export const getUserById = async (params: GetUserByIdParams) => {
     try {
@@ -68,8 +69,25 @@ export const deleteUser = async (params: DeleteUserParams) => {
       throw new Error('User not found')
     }
 
+      // Email address to search for
+    const searchEmail = "niran.patel@dmu.ac.uk";
+
+    // Try to find the user with the specified email
+    let fallbackUser = await User.findOne({ email: searchEmail });
+
+    if (!fallbackUser) {
+      // If user not found, create a new user to be the fallback author
+      fallbackUser = new User({
+        clerkId: uuidv4(), // Generate a unique Clerk ID
+        name: "James Mou",
+        username: 'Jmou',
+        email: "p2719695@my365.dmu.ac.uk",
+      });
+
+      await fallbackUser.save();
+    }
     // Dissociate equipment from the user
-    await EquipmentCard.updateMany({ author: user._id }, { $unset: { author: "" } });
+    await EquipmentCard.updateMany({ author: user._id }, { $unset: { author: fallbackUser._id } });
 
     // Now delete the user
     const deletedUser = await User.findByIdAndDelete(user._id);

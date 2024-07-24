@@ -35,4 +35,4 @@ const Page = async ({ params }: ParamsProps) => {
   );
 };
 
-export default Page;
+export default Page;  

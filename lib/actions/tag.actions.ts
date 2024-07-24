@@ -5,27 +5,64 @@ import { connectToDatabase } from "../mongoose"
 import { GetAllTagsParams, GetEquipmentByTagIdParams, GetTopInteractedTagsParams } from "./shared.types";
 import Tag, { ITag } from "@/database/tag.model";
 import EquipmentCard from "@/database/equipment.model";
-import { FilterQuery } from "mongoose";
+import mongoose, { FilterQuery } from "mongoose";
+import Interaction from "@/database/interaction.model";
+
 
 export const getTopTags = async (params: GetTopInteractedTagsParams) => {
     try {
-        await connectToDatabase();
-        const {userId} = params
-
-        const user = await User.findById(userId)
-        if (!user) throw new Error("User not found")
-        
-        //Find interactions for the user and group by equipment tags
-        //Interaction functionality
-       
-        return [{_id: "1", name: 'tag1'}, {_id: "2", name: 'tag1'}, {_id: "3", name: 'tag1'}]
-
-
+      await connectToDatabase();
+      const { userId, limit = 3 } = params;
+  
+      // Ensure the user exists
+      const user = await User.findById(userId);
+      if (!user) throw new Error("User not found");
+  
+      // Aggregation pipeline to get top interacted tags
+      const topTags = await Interaction.aggregate([
+        { $match: { user: new mongoose.Types.ObjectId(userId) } },
+        {
+          $lookup: {
+            from: "equipmentcards", // Referencing the EquipmentCard collection
+            localField: "equipment", // Local field in Interaction to join on
+            foreignField: "_id", // Field in EquipmentCard to join on
+            as: "equipment"
+          }
+        },
+        { $unwind: "$equipment" },
+        { $unwind: "$equipment.tag" }, // Unwind the tag field in EquipmentCard
+        {
+          $group: {
+            _id: "$equipment.tag", // Group by the tag field
+            count: { $sum: 1 }
+          }
+        },
+        { $sort: { count: -1 } },
+        { $limit: limit },
+        {
+          $lookup: {
+            from: "tags", // Referencing the Tag collection
+            localField: "_id", // Local field in the aggregation result to join on
+            foreignField: "_id", // Field in Tag to join on
+            as: "tagInfo"
+          }
+        },
+        { $unwind: "$tagInfo" },
+        {
+          $project: {
+            _id: { $toString: "$tagInfo._id" }, // Convert ObjectId to string
+            name: "$tagInfo.name" // Projecting the tag name
+          }
+        }
+      ]);
+  
+      return topTags;
+  
     } catch (error) {
-        console.log('Error getting tags', error)
-        throw error;
+      console.log('Error getting tags', error);
+      return []; // Return an empty array instead of throwing an error
     }
-}
+  };
 
 export const getAllTags = async (params: GetAllTagsParams) => {
     try {

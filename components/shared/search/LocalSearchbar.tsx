@@ -70,7 +70,7 @@ const LocalSearchbar = ({
                 placeholder={placeholder}
              
                 onChange={(e) => setSearch(e.target.value)}
-                className='paragraph-regular no-focus placeholder background-light800_darkgradient border-none shadow-none outline-none'
+                className='paragraph-regular no-focus placeholder  border-none shadow-none outline-none bg-transparent'
             />
         </div>
     </div>

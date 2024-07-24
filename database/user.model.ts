@@ -23,7 +23,7 @@ const UserSchema: Schema = new Schema({
     clerkId: { type: String, required: true },
     name: { type: String, required: true },
     username: { type: String, required: true, unique: true, },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true, },
     password: { type: String },
     bio: { type: String },
     picture: { type: String},
@@ -33,10 +33,7 @@ const UserSchema: Schema = new Schema({
     joinedAt: { type: Date, default: Date.now }
 });
 
-// set default username in the schema [to be used in username key]
-// function() {
-//     return `user_${this._id.toString().substr(-6)}`
-//   } 
+
 
 // Create the EquipmentCard model
 const User = models.User || model('User', UserSchema);

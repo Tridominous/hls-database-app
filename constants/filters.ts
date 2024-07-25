@@ -26,6 +26,6 @@
   export const GlobalSearchFilters = [
     { name: "Equipment", value: "equipment" },
     { name: "User", value: "user" },
-    { name: "Tag", value: "tag" },
+    { name: "Category", value: "tag" },
   ];
   

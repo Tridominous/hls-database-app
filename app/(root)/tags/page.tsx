@@ -12,7 +12,7 @@ import React from 'react'
 
 
 export const metadata: Metadata = {
-  title: "Tags | HLS Tags",
+  title: "Categories | HLS Categories",
 }
 
 const page = async ({searchParams}: SearchParamsProps) => {
@@ -23,14 +23,14 @@ const page = async ({searchParams}: SearchParamsProps) => {
     })
   return (
     <>
-      <h1 className="h1-bold text-dark100_light900">All Equipment Tags</h1>
+      <h1 className="h1-bold text-dark100_light900">All Equipment Categories</h1>
 
     <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
       <LocalSearchbar
         route="/tags"
         iconPosition="left"
         imgSrc="/assets/icons/search.svg"
-        placeholder="Search for equipment tags"
+        placeholder="Search for equipment categories"
         otherClasses="flex-1"
       />
 
@@ -63,8 +63,8 @@ const page = async ({searchParams}: SearchParamsProps) => {
                 ))
             ) : (
                 <NoResult
-                title="No tags found"
-                description="It looks like there are no equipment with such tags."
+                title="No Categories found"
+                description="It looks like there are no equipment with such category."
                 link="/add-equipment"
                 linkTitle="Add new equipment"
                 />

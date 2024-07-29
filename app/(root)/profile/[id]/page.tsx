@@ -15,16 +15,23 @@ export const metadata: Metadata = {
     title: "Profile | HLS User",
   }
   
+
 const Page = async ({params, searchParams}: URLProps) => {
     const { userId: clerkId} = auth();
     // const {user, totalEquipment} = await getUserInfo({userId: params.id});
     let user, totalEquipment;
     try {
     ({ user, totalEquipment } = await getUserInfo({userId: params.id}));
+    if(!user) {
+        return <div className='paragraph-regular text-dark200_light800'>
+            User not found | You can find the user in the community page
+        </div>
+    }
     } catch (error) {
-    return <div className='paragraph-regular text-dark200_light800'>
-        User not found | You can find the user in the community page
-    </div>;
+        console.log("Error finding user", error)
+        return <div className='paragraph-regular text-dark200_light800'>
+            User not found | You can find the user in the community page
+        </div>
     }
 
     

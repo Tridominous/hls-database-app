@@ -111,6 +111,7 @@ export interface CreateUserParams {
   username: string;
   email: string;
   picture: string;
+  role?: string;
 }
 
 export interface GetUserByIdParams {

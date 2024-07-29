@@ -13,7 +13,7 @@ const Page = async ({ params }: ParamsProps) => {
 
   if (!userId) {
     console.log("No userId found");
-    return <div>User not authenticated</div>;
+    return <div className='text-dark100_light900'>User not authenticated</div>;
   }
 
   try {
@@ -22,7 +22,7 @@ const Page = async ({ params }: ParamsProps) => {
 
     if (!mongoUser) {
       console.error("MongoDB user not found for Clerk userId:", userId);
-      return <div>User not found</div>;
+      return <div className='text-dark100_light900'>User not found</div>;
     }
 
     console.log("Fetching equipment details for id:", params.id);
@@ -30,30 +30,31 @@ const Page = async ({ params }: ParamsProps) => {
 
     if (!equipmentDetails) {
       console.error("Equipment not found for id:", params.id);
-      return <div>Equipment not found</div>;
+      return <div className='text-dark100_light900'>Equipment not found</div>;
     }
 
     console.log("MongoUser:", mongoUser);
     console.log("EquipmentDetails:", equipmentDetails);
 
     // Ensure equipmentDetails is serializable
-    const serializableEquipmentDetails = JSON.parse(JSON.stringify(equipmentDetails));
+    const serializableEquipmentDetails = JSON.stringify(equipmentDetails);
+    // console.log("SerializableEquipmentDetails:", serializableEquipmentDetails);
 
-    return (
+    return (  
       <>
         <h1 className="h1-bold text-dark100_light900">Edit Equipment</h1>
         <div className="mt-9">
           <Equipment
             type="Edit"
             mongoUserId={mongoUser._id.toString()}
-            equipmentDetails={JSON.stringify(serializableEquipmentDetails)}
+            equipmentDetails={serializableEquipmentDetails}
           />
         </div>
       </>
     );
   } catch (error) {
     console.error("Error in Edit Equipment Page:", error);
-    return <div>An error occurred while loading the page. Please try again.</div>;
+    return <div className='text-dark100_light900'>An error occurred while loading the page. Please try again.</div>;
   }
 };
 

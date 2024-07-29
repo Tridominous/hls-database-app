@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { deleteEquipment } from '@/lib/actions/equipment.action';
 import { usePathname, useRouter } from 'next/navigation';
 
-import {
+import { 
     AlertDialog,
     AlertDialogAction,
     AlertDialogCancel,
@@ -21,7 +21,7 @@ import { Button } from '../ui/button';
 
 interface Props {
     type: string;
-    itemId: string;
+    itemId: string; 
 }
 const EditDeleteAction = ({type, itemId}: Props) => {
     const pathname = usePathname();

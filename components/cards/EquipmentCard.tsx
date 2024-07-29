@@ -125,13 +125,13 @@ const EquipmentCard = ({
                         <EditDeleteAction type="Equipment" itemId={JSON.stringify(_id)} />
                     )
                 }
-            </SignedIn>
+            </SignedIn>   
 
         </div>
 
         <div className='mt-3.5 flex flex-wrap gap-2'>
            
-        <RenderTag name={getTagName(tag.name)}/>
+        { tag && <RenderTag name={getTagName(tag.name)}/>}
           
         </div>
 

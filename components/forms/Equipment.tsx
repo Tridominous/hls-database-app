@@ -73,13 +73,11 @@ const form = useForm<z.infer<typeof EquipmentSchema>>({
 
 useEffect(() => {
   console.log("Component mounted");
-  const parseDetails = () => {
+  if (equipmentDetails) {
     try {
-      if (equipmentDetails) {
-        const parsed = JSON.parse(equipmentDetails);
-        console.log("Parsed Equipment details", parsed);
-        setParsedDetails(parsed);
-      }
+      const parsed = typeof equipmentDetails === 'string' ? JSON.parse(equipmentDetails) : equipmentDetails;
+      console.log("Parsed Equipment details", parsed);
+      setParsedDetails(parsed);
     } catch (error) {
       console.error("Error parsing equipmentDetails:", error);
       toast({
@@ -88,9 +86,7 @@ useEffect(() => {
         description: 'Failed to parse equipment details'
       });
     }
-  };
-
-  parseDetails();
+  }
 }, [equipmentDetails, toast]);
 
 useEffect(() => {
@@ -106,7 +102,7 @@ useEffect(() => {
       labNumber: parsedDetails.labNumber || "",
       labName: parsedDetails.labName || "",
       team: parsedDetails.team || "",
-      serviceDate: parsedDetails.serviceDate ? new Date(parsedDetails.serviceDate) : new Date('2024-06-13'),
+      serviceDate: parsedDetails.serviceDate ? new Date(parsedDetails.serviceDate.$date || parsedDetails.serviceDate) : new Date('2024-06-13'),
       tag: parsedDetails?.tag?.name || "",
       comment: parsedDetails.comment || "",
       imgUrl: parsedDetails.imgUrl || "",
@@ -165,7 +161,7 @@ const handleImageDelete = (image: string) => {
   
     try {
       // Check if mongoUserId exists and is a valid JSON string
-      const authorId = JSON.parse(mongoUserId);
+      const authorId = mongoUserId;
       console.log("Checking authorId", authorId);
   
       if (!authorId) {
@@ -180,7 +176,7 @@ const handleImageDelete = (image: string) => {
       if (type === 'Edit') {
          // Delete old image if it exists
          if (parsedDetails.imgUrl && parsedDetails.imgUrl !== values.imgUrl) {
-          handleImageDelete(parsedDetails.imgUrl);
+          await handleImageDelete(parsedDetails.imgUrl);
           console.log("Deleted imgUrl from Uploadthing")
         } else {
           console.log("No imgUrl to delete | failed to delete imgUrl from Uploadthing")
@@ -250,7 +246,7 @@ const handleImageDelete = (image: string) => {
             serviceDate: values.serviceDate || new Date(),
             comment: values.comment || "",
             imgUrl: values.imgUrl || "",
-            author: authorId,
+            author: JSON.parse(authorId),
             path: pathname
           });
           console.log("createEquipment response: ", response);
@@ -341,6 +337,7 @@ const handleImageDelete = (image: string) => {
                     {...field} 
                 />
               </FormControl>
+              <FormMessage  className='text-red-500'/>
             </FormItem>
           )}
         />
@@ -358,6 +355,7 @@ const handleImageDelete = (image: string) => {
                     {...field} 
                 />
               </FormControl>
+              <FormMessage  className='text-red-500'/>
             </FormItem>
           )}
         />
@@ -375,6 +373,7 @@ const handleImageDelete = (image: string) => {
                     {...field} 
                 />
               </FormControl>
+              <FormMessage  className='text-red-500'/>
             </FormItem>
           )}
         />
@@ -392,6 +391,7 @@ const handleImageDelete = (image: string) => {
                     {...field} 
                 />
               </FormControl>
+              <FormMessage  className='text-red-500'/>
             </FormItem>
           )}
         />
@@ -454,7 +454,7 @@ const handleImageDelete = (image: string) => {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage  className='text-red-500'/>
                 </FormItem>
               )}
             />
@@ -470,7 +470,7 @@ const handleImageDelete = (image: string) => {
                     {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage  className='text-red-500'/>
                 </FormItem>
               )}
             />
@@ -486,7 +486,7 @@ const handleImageDelete = (image: string) => {
                     {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage  className='text-red-500'/>
                 </FormItem>
               )}
             />
@@ -502,7 +502,7 @@ const handleImageDelete = (image: string) => {
                     {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage  className='text-red-500'/>
                 </FormItem>
               )}
             />
@@ -518,7 +518,7 @@ const handleImageDelete = (image: string) => {
                     {...field}
                      />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage  className='text-red-500'/>
                 </FormItem>
               )}
             />
@@ -560,7 +560,7 @@ const handleImageDelete = (image: string) => {
                       />
                     </PopoverContent>
                   </Popover>
-                  <FormMessage />
+                  <FormMessage  className='text-red-500'/>
                 </FormItem>
               )}
             />
@@ -589,7 +589,7 @@ const handleImageDelete = (image: string) => {
                     {...field} 
                 />
               </FormControl>
-            
+              <FormMessage  className='text-red-500'/>
             </FormItem>
           )}
         />
@@ -644,7 +644,7 @@ const handleImageDelete = (image: string) => {
               <FormLabel className='paragraph-semibold text-dark400_light800'>Equipment Type <span className='text-primary-500'>*</span></FormLabel>
               <FormControl className='mt-3.5'>
                 <Input 
-                    disabled={ type === 'Edit' }
+                    // disabled={ type === 'Edit' }
                     className='no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border'
                     {...field} 
                     placeholder='Spectrophotometer'

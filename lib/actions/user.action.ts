@@ -1,6 +1,6 @@
 "use server"
 
-import User from "@/database/user.model";
+import User, { IUser } from "@/database/user.model";
 import { connectToDatabase } from "../mongoose"
 import { CreateUserParams, DeleteUserParams, GetAllUsersParams, GetSavedEquipmentParams, GetUserByIdParams, GetUserStatsParams, ToggleEquipmentParams, UpdateUserParams } from "./shared.types";
 import { revalidatePath } from "next/cache";
@@ -34,7 +34,16 @@ export const getUserById = async (params: GetUserByIdParams) => {
 export const createUser = async (userData: CreateUserParams) => {
   try {
     await  connectToDatabase();
-    const newUser = await User.create(userData)
+    // const newUser = await User.create(userData)
+     // Check the email domain
+     const emailDomain = userData.email.split('@')[1];
+     if (emailDomain === 'dmu.ac.uk') {
+       userData.role = 'admin';
+     } else {
+       userData.role = userData.role || 'user'; // Set the default role if not provided
+     }
+ 
+     const newUser = await User.create(userData);
 
     return newUser;
 
@@ -312,3 +321,14 @@ export const getUserEquipment = async (params: GetUserStatsParams) => {
   }
 }
 
+
+export const getUserRole = async (clerkId: string) => {
+  try {
+    await connectToDatabase();
+    const user = await User.findOne({ clerkId }).exec();
+    return  user?.role 
+  } catch (error) {
+    console.error('Error fetching user role:', error);
+    return null;
+  }
+};

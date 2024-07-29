@@ -9,7 +9,7 @@ export interface ISubunit {
   modelname?: string;
   serialNumber?: string;
   assetTag?: string;
-  serviceDate?: string;
+  serviceDate?: Date;
 }
 
 // Define the main EquipmentCard interface
@@ -34,21 +34,21 @@ export interface IEquipmentCard extends Document {
 
 // Define the Subunit schema
 const SubunitSchema: Schema = new Schema({
-  title: { type: String, required: true, minlength: 4, maxlength: 100 },
+  title: { type: String, required: true, minlength: 2, maxlength: 100 },
   brandname: { type: String, minlength: 2, maxlength: 100 },
   modelname: { type: String, minlength: 2, maxlength: 100 },
-  serialNumber: { type: String, minlength: 4, maxlength: 25 },
+  serialNumber: { type: String, minlength: 2, maxlength: 25 },
   assetTag: { type: String, minlength: 2, maxlength: 25 },
-  serviceDate: { type: String, required: true }
+  serviceDate: { type: Date }
 });
 
 // Define the EquipmentCard schema
 const EquipmentCardSchema: Schema = new Schema({
   imgUrl: { type: String, required: true },
-  title: { type: String, required: true, minlength: 4, maxlength: 100 },
+  title: { type: String, required: true, minlength: 2, maxlength: 100 },
   brandname: { type: String, minlength: 2, maxlength: 100},
   modelname: { type: String, minlength: 2, maxlength: 100},
-  serialNumber: { type: String, minlength: 4, maxlength: 25  },
+  serialNumber: { type: String, minlength: 2, maxlength: 25  },
   assetTag: { type: String, minlength: 2, maxlength: 25},
   subunits: [SubunitSchema],
   labNumber: { type: String, minlength: 2, maxlength: 100 },

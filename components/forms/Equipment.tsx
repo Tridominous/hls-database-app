@@ -243,7 +243,7 @@ const handleImageDelete = (image: string) => {
             labName: values.labName || "",
             team: values.team || "",
             tag: values.tag || "",
-            serviceDate: values.serviceDate || new Date(),
+            serviceDate: values.serviceDate ? new Date(values.serviceDate) : new Date(),
             comment: values.comment || "",
             imgUrl: values.imgUrl || "",
             author: JSON.parse(authorId),
@@ -552,7 +552,7 @@ const handleImageDelete = (image: string) => {
                         className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         mode="single"
                         selected={field.value ? new Date(field.value) : undefined}
-                        onSelect={(date) => field.onChange(date?.toISOString())}
+                        onSelect={(date) => field.onChange(date)}
                         disabled={(date) =>
                           date > new Date() || date < new Date("1900-01-01")
                         }
@@ -641,7 +641,7 @@ const handleImageDelete = (image: string) => {
           name="tag"
           render={({ field }) => (
             <FormItem className='flex w-full flex-col'>
-              <FormLabel className='paragraph-semibold text-dark400_light800'>Equipment Type <span className='text-primary-500'>*</span></FormLabel>
+              <FormLabel className='paragraph-semibold text-dark400_light800'>Equipment Category <span className='text-primary-500'>*</span></FormLabel>
               <FormControl className='mt-3.5'>
                 <Input 
                     // disabled={ type === 'Edit' }

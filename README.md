@@ -2,11 +2,12 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 # First step run 
 ```bash
-git clone 
+git clone https://github.com/Tridominous/hls-database-app
 ```
 ## Requirements
-# Nodejs
+ Nodejs
 # Environmental variables
+```bash
 navigate to/create a .env/local file and add the following API keys;
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY => Obtained from Clerk js (Sign up and create a new project/application --has detailed documentation)
 CLERK_SECRET_KEY => Obtained from Clerk js
@@ -25,12 +26,13 @@ MONGODB_URL => Spin up a MongoDB database and get a connection string
 
 NEXT_PUBLIC_SERVER_URL => Obtained after deploying through Vercel, not essential to run the code.
 
-
+```
 ## Running the application
 First, run the development server:
 
 ```bash
 npm install
+#then
 npm run dev
 # or
 yarn dev

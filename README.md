@@ -1,10 +1,38 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# First step run 
+```bash
+git clone https://github.com/Tridominous/hls-database-app
+```
+## Requirements
+ Nodejs
+# Environmental variables
+```bash
+navigate to/create a .env/local file and add the following API keys;
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY => Obtained from Clerk js (Sign up and create a new project/application --has detailed documentation)
+CLERK_SECRET_KEY => Obtained from Clerk js
 
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+
+WEBHOOK_SECRET => Obtained from Clerk Js to connect Clerk Auth and MongoDB users collection.
+
+UPLOADTHING_SECRET => Sign up to uploadthing and spin up a new application to get the secret API key and APP_ID
+UPLOADTHING_APP_ID
+
+MONGODB_URL => Spin up a MongoDB database and get a connection string
+
+NEXT_PUBLIC_SERVER_URL => Obtained after deploying through Vercel, not essential to run the code.
+
+```
+## Running the application
 First, run the development server:
 
 ```bash
+npm install
+#then
 npm run dev
 # or
 yarn dev
@@ -16,18 +44,7 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
 ## Deploy on Vercel
 

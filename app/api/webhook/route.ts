@@ -1,7 +1,7 @@
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
-import { UpdateUser, createUser, deleteUser } from '@/lib/actions/user.action'
+import { updateUser, createUser, deleteUser } from '@/lib/actions/user.action'
 import { Error as MongooseError } from 'mongoose'
 
 export async function POST(req: Request) {
@@ -92,7 +92,7 @@ export async function POST(req: Request) {
   if(eventType === 'user.updated') {
     const {id, email_addresses, image_url, username, first_name, last_name} = evt.data
     try {
-      const mongoUser = await UpdateUser({
+      const mongoUser = await updateUser({
         clerkId: id,
         updateData: {
             name: `${first_name}${last_name ? ` ${last_name}` : ""}`,
@@ -117,11 +117,21 @@ export async function POST(req: Request) {
 
   if(eventType === 'user.deleted') {
     const {id} = evt.data
-    const deleteduser = await deleteUser({
-        clerkId: id!,
-    })
+    try {
+        const deleteduser = await deleteUser({
+          clerkId: id!,
+      })
+    
+      if (deleteduser) {
+        return Response.json({message: 'User deleted successfully', user: deleteduser});
+      } else {
+        return Response.json({message: 'User not found in database', status: 404});
+      }
+    } catch (error) {
+      console.error('Error deleting user in MongoDB', error)
+      throw error
+    }
    
-    return  Response.json({message: 'OK', user: deleteduser})
   
   }
 

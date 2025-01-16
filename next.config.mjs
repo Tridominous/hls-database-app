@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     basePath: "",
+    output: "standalone",
     experimental: {
     mdxRs: true,
     serverComponentsExternalPackages: ["mongoose"],
